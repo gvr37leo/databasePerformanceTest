@@ -1,0 +1,6 @@
+packages/
+**/bin/*
+**/obj/*
+**/obj/
+App.config
+**/Properties/*

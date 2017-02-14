@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="mssql"
+                   namespace="mssql">
+
+  <!--<class name="ZorgIfmTarief">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="BtwPercentage" />
+    <property name="GeneriekeProductcode" />
+    <property name="Artikelnummer" />
+  </class>-->
+  
+  
+  <class name = "Student">
+    <id name = "ID">
+      <generator class = "native"/>
+    </id>
+
+    <property name = "LastName"/>
+    <property name = "FirstMidName"/>
+  </class>
+</hibernate-mapping>
