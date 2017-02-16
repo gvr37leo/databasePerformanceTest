@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,14 +14,15 @@ namespace couchDBCsharp
     class Program
     {   
         static void Main(string[] args) {
-
+            var sw = Stopwatch.StartNew();
             Task.Run(async () => {
                 var client = new MyCouchClient("http://localhost:5984/", "test");
 
-                Console.WriteLine("start req");
                 await client.Entities.PostAsync(new { name = "paul" });
             }).Wait();
-            Console.WriteLine("done");
+
+            sw.Stop();
+            Console.WriteLine($"elapsed time {sw.Elapsed}");
         }
     }
 }

@@ -4,3 +4,4 @@ packages/
 **/obj/
 App.config
 **/Properties/*
+.idea/

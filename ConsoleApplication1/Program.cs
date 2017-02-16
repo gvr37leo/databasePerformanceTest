@@ -5,11 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NHibernate;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
-using NHibernate.Driver;
+using NHibernate.Mapping.ByCode;
 using System.Reflection;
-using System.IO;
-using NHibernate.Tool.hbm2ddl;
 
 namespace mssql {
     class Program {
@@ -19,17 +16,28 @@ namespace mssql {
             Configuration config = new Configuration();
             config.Configure();
 
-            config.AddAssembly(typeof(Student).Assembly);
+            var mapper = new ModelMapper();
+            mapper.AddMappings(typeof(StudentMap).Assembly.GetTypes());
+            mapper.AddMappings(typeof(ZorgIfmTariefMap).Assembly.GetTypes());
+            mapper.CompileMappingForEachExplicitlyAddedEntity().WriteAllXmlMapping();
+            var mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
+            var xml = mapping.AsString();
+
+
+            config.AddAssembly(typeof(ZorgIfmTarief).Assembly);
             ISessionFactory sf = config.BuildSessionFactory();
             ISession session = sf.OpenSession();
 
-            var list = session.QueryOver<Student>().Select(s => s.FirstMidName).List<string>();
+            
+
+
+            var list = session.CreateCriteria<Student>()
+                .SetMaxResults(100)
+                .List<Student>();
 
             foreach (var tar in list) {
-                Console.WriteLine(tar);
+                Console.WriteLine(tar.FirstMidName);
             }
-
-            Console.Read();
         }
     }
 }

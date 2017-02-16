@@ -3,14 +3,12 @@
                    assembly="mssql"
                    namespace="mssql">
 
-  <!--<class name="ZorgIfmTarief">
+  <class name="ZorgIfmTarief">
     <id name="Id">
       <generator class="native" />
     </id>
-    <property name="BtwPercentage" />
-    <property name="GeneriekeProductcode" />
     <property name="Artikelnummer" />
-  </class>-->
+  </class>
   
   
   <class name = "Student">
