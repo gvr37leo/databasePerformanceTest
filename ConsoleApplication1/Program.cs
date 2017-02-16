@@ -15,6 +15,7 @@ namespace mssql {
         static void Main(string[] args) {
             Configuration config = new Configuration();
             config.Configure();
+            
 
             var mapper = new ModelMapper();
             mapper.AddMappings(typeof(StudentMap).Assembly.GetTypes());
