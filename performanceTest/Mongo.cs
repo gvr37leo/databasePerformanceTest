@@ -1,40 +1,92 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using performanceTest.Models;
 
 namespace performanceTest {
     class Mongo : IDatabase {
 
-        public Mongo(string url){
-            MongoClient mongo = new MongoClient(url);
+        MongoClient client;
+        IMongoDatabase database;
+        IMongoCollection<BsonDocument> collection;
+        BsonClassMap classMap;
+
+        public string Dbname { get; set; }
+        public string Tablename { get; set; }
+
+        public Mongo(string url, string Dbname, string Tablename) {
+            this.Dbname = Dbname;
+            this.Tablename = Tablename;
+            BsonClassMap.RegisterClassMap<Person>();
+
+            client = new MongoClient(url);
+            database = client.GetDatabase(Dbname);
+            collection = database.GetCollection<BsonDocument>(Tablename);
+            
         }
 
-        public void ClearDb() {
-            throw new NotImplementedException();
+        public void ClearDb(){
+            client.DropDatabase(Dbname);
         }
 
-        public void FillDb() {
-            throw new NotImplementedException();
+        public void FillDb(int amount){
+            for(int i = 0; i < amount; i++) {
+                collection.InsertOne(new BsonDocument{
+                    {"name","paul"}
+                });
+            }
         }
 
-        public void CreateDb()
-        {
-            throw new NotImplementedException();
+        public void CreateDb(){
+            client.GetDatabase(Dbname);
         }
 
-        public void Create(int amount) {
-            throw new NotImplementedException();
+        public void ManyJoins(){
+
         }
 
-        public void Read(int amount) {
-            throw new NotImplementedException();
+        public void ManySmallQuerys(){
+            collection.Find(new BsonDocument{
+                {"name","paul"}
+            });
         }
 
-        public void Update(int amount) {
-            throw new NotImplementedException();
+        public void ForceZboSpecific(){
         }
 
-        public void Delete(int amount) {
-            throw new NotImplementedException();
+        public void IndexedSearch(){
+        }
+
+        public void NoIndexSearch(){
+        }
+
+        public void EmbeddedVsJoin(){
+        }
+
+        public void Create(){
+            collection.InsertOne(new BsonDocument{
+                {"name","paul"}
+            });
+        }
+
+        public void Read(){
+            collection.Find(new BsonDocument{
+                {"name","paul"}
+            });
+        }
+
+        public void Update(){
+            collection.UpdateOne(new BsonDocument{
+                {"name","paul"}
+            }, new BsonDocument{
+                {"name","wouter"}
+            });
+        }
+
+        public void Delete(){
+            collection.DeleteOne(new BsonDocument{
+                {"name","paul"}
+            });
         }
     }
 }

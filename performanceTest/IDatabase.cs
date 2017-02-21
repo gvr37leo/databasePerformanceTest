@@ -5,16 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace performanceTest {
-    interface IDatabase
-    {
-        
+    internal interface IDatabase{
+        string Dbname { get; set;}
+        string Tablename { get; set; }
         void ClearDb();
-        void FillDb();
+        void FillDb(int amount);
         void CreateDb();
 
-        void Create(int amount);
-        void Read(int amount);
-        void Update(int amount);
-        void Delete(int amount);
+        void ManyJoins();
+        void ManySmallQuerys();
+        void ForceZboSpecific();
+        void IndexedSearch();
+        void NoIndexSearch();
+        void EmbeddedVsJoin();
+
+        void Create();
+        void Read();
+        void Update();
+        void Delete();
     }
 }

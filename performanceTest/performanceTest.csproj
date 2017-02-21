@@ -82,9 +82,11 @@
   <ItemGroup>
     <Compile Include="CouchDB.cs" />
     <Compile Include="IDatabase.cs" />
+    <Compile Include="Models\Declaratie.cs" />
     <Compile Include="Mongo.cs" />
     <Compile Include="Mssql.cs" />
     <Compile Include="Neo4j.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

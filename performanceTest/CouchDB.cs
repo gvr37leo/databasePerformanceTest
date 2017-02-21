@@ -8,36 +8,63 @@ using MyCouch;
 namespace performanceTest {
     class CouchDb : IDatabase {
 
+        MyCouchClient client;
+
         public CouchDb(string url){
-            var client = new MyCouchClient(url, "test");
+            client = new MyCouchClient(url, "test");
         }
 
-        public void ClearDb() {
+        public string Dbname { get; set; }
+        public string Tablename { get; set; }
+        public void ClearDb(){
             throw new NotImplementedException();
         }
 
-        public void FillDb() {
+        public void FillDb(int amount){
             throw new NotImplementedException();
         }
 
-        public void CreateDb()
-        {
+        public void CreateDb(){
             throw new NotImplementedException();
         }
 
-        public void Create(int amount) {
+        public void ManyJoins(){
             throw new NotImplementedException();
         }
 
-        public void Read(int amount) {
+        public void ManySmallQuerys(){
             throw new NotImplementedException();
         }
 
-        public void Update(int amount) {
+        public void ForceZboSpecific(){
             throw new NotImplementedException();
         }
 
-        public void Delete(int amount) {
+        public void IndexedSearch(){
+            throw new NotImplementedException();
+        }
+
+        public void NoIndexSearch(){
+            throw new NotImplementedException();
+        }
+
+        public void EmbeddedVsJoin(){
+            throw new NotImplementedException();
+        }
+
+        public void Create(){
+            throw new NotImplementedException();
+        }
+
+        public void Read(){
+            throw new NotImplementedException();
+        }
+
+        public void Update(){
+            throw new NotImplementedException();
+        }
+
+        public void Delete(){
             throw new NotImplementedException();
         }
     }

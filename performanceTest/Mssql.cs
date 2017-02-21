@@ -11,33 +11,58 @@ namespace performanceTest{
             
         }
 
-        public void ClearDb() {
-            throw new NotImplementedException();
+        public string Dbname { get; set; }
+        public string Tablename { get; set; }
+        public void ClearDb(){
+            
         }
 
-        public void FillDb() {
-            throw new NotImplementedException();
+        public void FillDb(int amount){
+            
         }
 
-        public void CreateDb()
-        {
-            throw new NotImplementedException();
+        public void CreateDb(){
+            
         }
 
-        public void Create(int amount) {
-            throw new NotImplementedException();
+        public void ManyJoins(){
+            
         }
 
-        public void Read(int amount) {
-            throw new NotImplementedException();
+        public void ManySmallQuerys(){
+            
         }
 
-        public void Update(int amount) {
-            throw new NotImplementedException();
+        public void ForceZboSpecific(){
+            
         }
 
-        public void Delete(int amount) {
-            throw new NotImplementedException();
+        public void IndexedSearch(){
+            
+        }
+
+        public void NoIndexSearch(){
+            
+        }
+
+        public void EmbeddedVsJoin(){
+            
+        }
+
+        public void Create(){
+            
+        }
+
+        public void Read(){
+            
+        }
+
+        public void Update(){
+            
+        }
+
+        public void Delete(){
+            
         }
     }
 }
