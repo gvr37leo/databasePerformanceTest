@@ -3,11 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernate.Mapping.ByCode;
+using System.Data.SqlClient;
+using System.Reflection;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Connection;
+using NHibernate.Dialect;
+using NHibernate.Driver;
+using performanceTest.Models;
 
 namespace performanceTest{
     class Mssql:IDatabase {
+        
+        ISessionFactory factory;
 
         public Mssql(){
+            Configuration config = new Configuration().DataBaseIntegration(db => {
+                db.ConnectionString = "Data Source=stan.topicus.local;Initial Catalog=ZBO_PAUL;Persist Security Info=True;User ID=sa;Password=Gehe1m";
+                db.Dialect<MySQLDialect>();
+                db.ConnectionProvider<DriverConnectionProvider>();
+                db.Driver<SqlClientDriver>();
+            });
+
+            var mapper = new ModelMapper();
+            mapper.AddMappings(Assembly.GetExecutingAssembly().GetExportedTypes());
+            HbmMapping mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
+            config.AddMapping(mapping);
+            factory = config.BuildSessionFactory();
             
         }
 
@@ -50,15 +74,27 @@ namespace performanceTest{
         }
 
         public void Create(){
-            
+            using (var session = factory.OpenSession()) 
+            using (var transaction = session.BeginTransaction()) 
+            {
+                session.SaveOrUpdate(new Person());
+                transaction.Commit();
+            }
         }
 
         public void Read(){
-            
+            using(var session = factory.OpenSession()) {
+                var list = session.QueryOver<Person>()
+                        .List<Person>();
+            }
         }
 
         public void Update(){
-            
+            using (var session = factory.OpenSession())
+            using (var transaction = session.BeginTransaction()) {
+                session.Update(new Person());
+                transaction.Commit();
+            }
         }
 
         public void Delete(){

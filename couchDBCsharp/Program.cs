@@ -8,6 +8,8 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using MyCouch;//https://github.com/danielwertheim/mycouch
+using performanceTest.Models;
+
 
 namespace couchDBCsharp
 {
@@ -18,7 +20,9 @@ namespace couchDBCsharp
             Task.Run(async () => {
                 var client = new MyCouchClient("http://localhost:5984/", "test");
 
-                await client.Entities.PostAsync(new { name = "paul" });
+                var json = JsonConvert.SerializeObject(new Person());
+
+                await client.Documents.PostAsync(json);//newtonsoft.json
             }).Wait();
 
             sw.Stop();

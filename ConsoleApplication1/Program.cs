@@ -7,6 +7,7 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
 using System.Reflection;
+using NHibernate.Criterion;
 
 namespace mssql {
     class Program {
@@ -14,6 +15,7 @@ namespace mssql {
 
         static void Main(string[] args) {
             Configuration config = new Configuration();
+            
             config.Configure();
             
 
@@ -29,12 +31,12 @@ namespace mssql {
             ISessionFactory sf = config.BuildSessionFactory();
             ISession session = sf.OpenSession();
 
+            var list = session.QueryOver<Student>()
+                .Where(student => student.ID > 1)
+                .Take(10)
+                .List<Student>();
             
 
-
-            var list = session.CreateCriteria<Student>()
-                .SetMaxResults(100)
-                .List<Student>();
 
             foreach (var tar in list) {
                 Console.WriteLine(tar.FirstMidName);

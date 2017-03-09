@@ -3,64 +3,71 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MyCouch;
-using Newtonsoft.Json;
-using performanceTest.Models;
+using CSRedis;
 
-namespace performanceTest {
-    class CouchDb : IDatabase {
+namespace performanceTest{
+    class Redis:IDatabase {
 
-        MyCouchClient client;
+        RedisClient client;
 
-        public CouchDb(string url, string Dbname, string Tablename) {
+        public Redis(string url, string Dbname, string Tablename) {
             this.Dbname = Dbname;
             this.Tablename = Tablename;
-            client = new MyCouchClient(url, Dbname);
+            client = new RedisClient(url);
         }
 
         public string Dbname { get; set; }
         public string Tablename { get; set; }
         public void ClearDb(){
+            client.FlushDb();
         }
 
         public void FillDb(int amount){
+            //n.v.t
         }
 
         public void CreateDb(){
+            //n.v.t
         }
 
         public void ManyJoins(){
+            throw new NotImplementedException();
         }
 
         public void ManySmallQuerys(){
+            throw new NotImplementedException();
         }
 
         public void ForceZboSpecific(){
+            throw new NotImplementedException();
         }
 
         public void IndexedSearch(){
+            throw new NotImplementedException();
         }
 
         public void NoIndexSearch(){
+            throw new NotImplementedException();
         }
 
         public void EmbeddedVsJoin(){
+            throw new NotImplementedException();
         }
 
         public void Create(){
-            var json = JsonConvert.SerializeObject(new Person());
-
-            client.Documents.PostAsync(json);
+            client.Set("name", "paul");
         }
 
         public void Read(){
-            
+            client.Get("name");
         }
 
         public void Update(){
+            client.Set("name", "paul");
         }
 
         public void Delete(){
+            client.Del("name");
         }
     }
 }
