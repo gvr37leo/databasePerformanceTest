@@ -12,6 +12,9 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Connection;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Impl;
+using NHibernate.Loader.Criteria;
+using NHibernate.Persister.Entity;
 using performanceTest.Models;
 
 namespace performanceTest{
@@ -32,7 +35,18 @@ namespace performanceTest{
             HbmMapping mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
             config.AddMapping(mapping);
             factory = config.BuildSessionFactory();
-            
+
+            HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
+        }
+
+        public String GetGeneratedSql(ICriteria criteria) {
+            var criteriaImpl = (CriteriaImpl)criteria;
+            var sessionImpl = (SessionImpl)criteriaImpl.Session;
+            var factory = (SessionFactoryImpl)sessionImpl.SessionFactory;
+            var implementors = factory.GetImplementors(criteriaImpl.EntityOrClassName);
+            var loader = new CriteriaLoader((IOuterJoinLoadable)factory.GetEntityPersister(implementors[0]), factory, criteriaImpl, implementors[0], sessionImpl.EnabledFilters);
+
+            return loader.SqlString.ToString();
         }
 
         public string Dbname { get; set; }
@@ -58,7 +72,23 @@ namespace performanceTest{
         }
 
         public void ForceZboSpecific(){
-            
+            using (var session = factory.OpenSession()){
+                VektisAanduidingPrestatiecodelijst prestatiecodelijst = new VektisAanduidingPrestatiecodelijst(0);
+                prestatiecodelijst.Code = 0;
+                string dbcDeclaratiecode = "";
+
+                var query = session.QueryOver<ZorgTogTariefWereld>()
+                    .Where(t => t.Prestatiecodelijst == prestatiecodelijst.Code)
+                    .And(t => t.DbcDeclaratiecode == dbcDeclaratiecode);
+
+                var generatedSQL = GetGeneratedSql(query.UnderlyingCriteria);
+                
+
+
+                var list = query
+                    .Fetch(t => t.Tarieven).Eager
+                    .FutureValue().Value;
+            }
         }
 
         public void IndexedSearch(){

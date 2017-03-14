@@ -25,8 +25,8 @@ namespace performanceTest {
             foreach (var database in dbs) {
                 sw.Restart();
                 for (int i = 0; i < repetitions; i++) {
-                    database.Create();
-                    //database.Read();
+                    //database.Create();
+                    database.ForceZboSpecific();
                 }
                 sw.Stop();
                 Console.WriteLine($"database {database.GetType()} took {sw.ElapsedMilliseconds / (float)repetitions} millis on average");
