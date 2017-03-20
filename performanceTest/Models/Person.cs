@@ -9,6 +9,7 @@ namespace performanceTest.Models {
         public virtual int ID { get; set; }
         public virtual string LastName { get; set; }
         public virtual string FirstMidName { get; set; }
+        public string Id { get; internal set; }
 
         public Person(){
             ID = random.Next();

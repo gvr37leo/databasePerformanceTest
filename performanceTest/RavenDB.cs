@@ -1,13 +1,22 @@
-﻿using System.Runtime.InteropServices;
-using Cassandra;
+﻿using System.Linq;
+using performanceTest.Models;
+using Raven;
+using Raven.Client;
+using Raven.Client.Document;
+using Raven.Client.Linq;
 
 namespace performanceTest {
-    class Cassandra : IDatabase{
-        Cluster cluster;
-        public Cassandra(){
-            cluster = Cluster.Builder().AddContactPoint("127.0.0.1").Build();
-            
+    class RavenDB : IDatabase{
+        IDocumentStore store;
 
+        public RavenDB(){
+            store = new DocumentStore {
+                Url = "http://localhost:8080/", // server URL
+                DefaultDatabase = "test"	// default database
+            };
+            store.Initialize();
+
+           
         }
 
         public string Dbname { get; set; }
@@ -49,18 +58,34 @@ namespace performanceTest {
         }
 
         public void Create(){
-            var session = cluster.Connect("test");
-            var rs = session.Execute("insert into users (lastname, age, city, email, firstname) values ('Jones', 35, 'Austin', 'bob@example.com', 'Bob')");
+            using (IDocumentSession session = store.OpenSession()) {
+                Person person = new Person {
+                    FirstMidName = "John",
+                    LastName = "baap"
+                };
+
+                session.Store(person);
+                string employeeId = person.Id;
+
+                session.SaveChanges();
+
+                Person loadedPerson = session.Load<Person>(employeeId);
+            }
         }
 
         public void Read(){
-            var session = cluster.Connect("test");
-            var rs = session.Execute("select * from users");
+            using (var session = store.OpenSession()) {
+
+                var query =
+                    from person in session.Query<Person>()
+                    select person;
+                var result = query.ToList();
+
+            }
         }
 
         public void Update(){
-            var session = cluster.Connect("test");
-            var rs = session.Execute("update users set age = 36 where lastname = 'Jones'");
+            throw new System.NotImplementedException();
         }
 
         public void Delete(){

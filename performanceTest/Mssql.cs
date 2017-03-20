@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NHibernate;
+﻿using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
-using System.Data.SqlClient;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Connection;
@@ -28,7 +22,10 @@ namespace performanceTest{
                 db.Dialect<MySQLDialect>();
                 db.ConnectionProvider<DriverConnectionProvider>();
                 db.Driver<SqlClientDriver>();
+                db.LogSqlInConsole = true;
             });
+
+
 
             var mapper = new ModelMapper();
             mapper.AddMappings(Assembly.GetExecutingAssembly().GetExportedTypes());
@@ -39,13 +36,12 @@ namespace performanceTest{
             HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
         }
 
-        public String GetGeneratedSql(ICriteria criteria) {
-            var criteriaImpl = (CriteriaImpl)criteria;
-            var sessionImpl = (SessionImpl)criteriaImpl.Session;
-            var factory = (SessionFactoryImpl)sessionImpl.SessionFactory;
+        public string GetGeneratedSql(ICriteria criteria) {
+            var criteriaImpl = criteria as CriteriaImpl;
+            var sessionImpl = criteriaImpl.Session;
+            var factory = sessionImpl.Factory;
             var implementors = factory.GetImplementors(criteriaImpl.EntityOrClassName);
-            var loader = new CriteriaLoader((IOuterJoinLoadable)factory.GetEntityPersister(implementors[0]), factory, criteriaImpl, implementors[0], sessionImpl.EnabledFilters);
-
+            var loader = new CriteriaLoader(factory.GetEntityPersister(implementors[0]) as IOuterJoinLoadable, factory, criteriaImpl, implementors[0], sessionImpl.EnabledFilters);
             return loader.SqlString.ToString();
         }
 
@@ -78,16 +74,17 @@ namespace performanceTest{
                 string dbcDeclaratiecode = "";
 
                 var query = session.QueryOver<ZorgTogTariefWereld>()
-                    .Where(t => t.Prestatiecodelijst == prestatiecodelijst.Code)
-                    .And(t => t.DbcDeclaratiecode == dbcDeclaratiecode);
-
-                var generatedSQL = GetGeneratedSql(query.UnderlyingCriteria);
+                    .Where(t => t.Prestatiecodelijst == 41)
+                    .And(t => t.DbcDeclaratiecode == "190600");
                 
 
+                //var result = query
+                //        .List<ZorgTogTariefWereld>();
 
                 var list = query
                     .Fetch(t => t.Tarieven).Eager
                     .FutureValue().Value;
+
             }
         }
 
@@ -115,7 +112,13 @@ namespace performanceTest{
         public void Read(){
             using(var session = factory.OpenSession()) {
                 var list = session.QueryOver<Person>()
+                        .Where(p => p.LastName == "sdfsa");
+                var query = list.UnderlyingCriteria;
+                var generatedSQL = GetGeneratedSql(query);
+
+                var result = query
                         .List<Person>();
+
             }
         }
 
