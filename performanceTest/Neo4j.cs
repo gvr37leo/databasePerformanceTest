@@ -1,5 +1,6 @@
 ﻿using System;
 using Neo4j.Driver.V1;
+using performanceTest.Models;
 
 namespace performanceTest {
     class Neo4J : IDatabase {
@@ -8,7 +9,7 @@ namespace performanceTest {
         public ISession session;
 
         public Neo4J(string url, string Dbname, string Tablename) {
-            driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "$RF5tg^YH"));
+            driver = GraphDatabase.Driver(url, AuthTokens.Basic("neo4j", "$RF5tg^YH"));
             session = driver.Session();
             this.Dbname = Dbname;
             this.Tablename = Tablename;
@@ -29,7 +30,7 @@ namespace performanceTest {
 
         public void FillDb(int amount){
             for (int i = 0; i < amount; i++) {
-                session.Run($"CREATE(handle:{Tablename} {{name:paul}})");
+                Create();
             }
         }
 
@@ -49,11 +50,12 @@ namespace performanceTest {
         }
 
         public void IndexedSearch(){
+            IStatementResult res = session.Run("match(n:Person{name:'ywr4z'}) return n");
             
         }
 
         public void NoIndexSearch(){
-            
+            IStatementResult res = session.Run("match(n{ lastname: 'j1pzk'}) return n");
         }
 
         public void EmbeddedVsJoin(){
@@ -61,7 +63,8 @@ namespace performanceTest {
         }
 
         public void Create(){
-            session.Run($"CREATE(handle:{Tablename} {{name:'paul'}})");
+            var person = new Person();
+            session.Run($"CREATE(handle:Person {{name:'{person.FirstMidName}', lastname:'{person.LastName}'}})");
         }
 
         public void Read(){

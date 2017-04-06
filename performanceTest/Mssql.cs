@@ -1,4 +1,6 @@
-﻿using NHibernate;
+﻿using System;
+using System.Data.SqlClient;
+using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
 using System.Reflection;
@@ -15,14 +17,16 @@ namespace performanceTest{
     class Mssql:IDatabase {
         
         ISessionFactory factory;
-
+        SqlConnection sqlConnection;
         public Mssql(){
+            //sqlConnection = new SqlConnection("Data Source=stan.topicus.local;Initial Catalog=ZBO_PAUL;Persist Security Info=True;User ID=sa;Password=Gehe1m");
+            //sqlConnection.Open();
             Configuration config = new Configuration().DataBaseIntegration(db => {
                 db.ConnectionString = "Data Source=stan.topicus.local;Initial Catalog=ZBO_PAUL;Persist Security Info=True;User ID=sa;Password=Gehe1m";
                 db.Dialect<MySQLDialect>();
                 db.ConnectionProvider<DriverConnectionProvider>();
                 db.Driver<SqlClientDriver>();
-                db.LogSqlInConsole = true;
+                //db.LogSqlInConsole = true;
             });
 
 
@@ -89,11 +93,23 @@ namespace performanceTest{
         }
 
         public void IndexedSearch(){
-            
+            using (var session = factory.OpenSession()) {
+                var query = session.QueryOver<Person>()
+                        .Where(p => p.ID == 2713998782023081984);
+                var res = query.List();
+                
+
+            }
         }
 
         public void NoIndexSearch(){
-            
+            using (var session = factory.OpenSession()) {
+                var query = session.QueryOver<Person>()
+                        .Where(p => p.LastName == "630og");
+                var res = query.List();
+
+
+            }
         }
 
         public void EmbeddedVsJoin(){
@@ -101,12 +117,24 @@ namespace performanceTest{
         }
 
         public void Create(){
-            using (var session = factory.OpenSession()) 
-            using (var transaction = session.BeginTransaction()) 
-            {
-                session.SaveOrUpdate(new Person());
-                transaction.Commit();
+            var person = new Person();
+            
+            SqlCommand sqlCommand = new SqlCommand($@"
+                insert into person (LastName,FirstMidName,ID)
+                values('{person.LastName}','{person.FirstMidName}',{person.ID})
+            ", sqlConnection);
+            try {
+                sqlCommand.ExecuteNonQuery();
+            } catch (Exception e) {
+                Console.WriteLine("collission");
             }
+            
+            //using (var session = factory.OpenSession()) 
+            //using (var transaction = session.BeginTransaction()) 
+            //{
+            //    session.SaveOrUpdate(new Person());
+            //    transaction.Commit();
+            //}
         }
 
         public void Read(){

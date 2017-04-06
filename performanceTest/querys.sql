@@ -7,8 +7,10 @@
  declare @code int = 0
 
  select top 10 *
- from ZorgGphTarief z inner join ZorgPrestatieTariefWereld zw on zw.Id = z.GphTariefWereld
- where zw.class = 4 and z.GphCode = @code
+ from ZorgGphTarief z 
+ inner join ZorgPrestatieTariefWereld zw on zw.Id = z.GphTariefWereld
+ where zw.class = 4 
+ and z.GphCode = @code
  
 
  --ifm
@@ -20,8 +22,10 @@
  declare @artikelnummer int = 0
 
  select top 10 *
- from ZorgIfmTarief z inner join ZorgPrestatieTariefWereld zw on zw.id = z.IfmTariefWereld
- where zw.class = 3 and z.Artikelnummer = @artikelnummer
+ from ZorgIfmTarief z 
+ inner join ZorgPrestatieTariefWereld zw on zw.id = z.IfmTariefWereld
+ where zw.class = 3 
+ and z.Artikelnummer = @artikelnummer
 
  --tog
  --Result = SessionFactory.GetCurrentSession().QueryOver<ZorgTogTariefWereld>()
@@ -29,8 +33,20 @@
  --                   .And(t => t.DbcDeclaratiecode == dbcDeclaratiecode)
  --                   .Fetch(t => t.Tarieven).Eager
  --                   .FutureValue().Value;
- declare @dbcdeclaratiecode varchar = '10B815'
+ declare @dbcdeclaratiecode varchar(max) = 'H40'
+ declare @prestatiecodelijst smallint = 10
+
+ select *
+ from ZorgPrestatieTariefWereld zw 
+ inner join ZorgTogTarief z on zw.id = z.TogTariefWereld
+ where zw.class = 1 
+ and zw.DbcDeclaratiecode = @dbcdeclaratiecode
+ and zw.Prestatiecodelijst = @prestatiecodelijst
+
 
  select top 10 *
- from ZorgPrestatieTariefWereld zw inner join ZorgTogTarief z on zw.id = z.TogTariefWereld
- where zw.class = 1 and zw.DbcDeclaratiecode = @dbcdeclaratiecode
+ from ZorgPrestatieTariefWereld zw 
+ inner join ZorgTogTarief z on zw.id = z.TogTariefWereld
+ where zw.class = 1 --TOG
+ and zw.DbcDeclaratiecode = @dbcdeclaratiecode
+ and zw.Prestatiecodelijst is null

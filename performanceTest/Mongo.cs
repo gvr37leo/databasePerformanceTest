@@ -55,18 +55,24 @@ namespace performanceTest {
         }
 
         public void IndexedSearch(){
+            collection.FindSync(new BsonDocument{
+                {"_id",ObjectId.Parse("58db7694f39e3c062c484c92")}
+            });
         }
 
         public void NoIndexSearch(){
+            collection.FindSync(new BsonDocument{
+                {"LastName","t6lzs"}
+            });
         }
 
         public void EmbeddedVsJoin(){
+
         }
 
         public void Create(){
-            collection.InsertOne(new BsonDocument{
-                {"name","paul"}
-            });
+            var person = new Person();
+            collection.InsertOne(person.ToBsonDocument());
         }
 
         public void Read(){

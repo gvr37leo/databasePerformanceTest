@@ -5,3 +5,4 @@ packages/
 App.config
 **/Properties/*
 .idea/
+databases.zip

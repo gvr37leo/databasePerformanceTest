@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using performanceTest.Models;
 using Raven;
 using Raven.Client;
@@ -26,7 +27,12 @@ namespace performanceTest {
         }
 
         public void FillDb(int amount){
-            throw new System.NotImplementedException();
+            using (IDocumentSession session = store.OpenSession()) {
+                for(int i = 0; i < amount; i++) {
+                    session.Store(new Person());
+                }
+                session.SaveChanges();
+            }
         }
 
         public void CreateDb(){
@@ -46,11 +52,21 @@ namespace performanceTest {
         }
 
         public void IndexedSearch(){
-            throw new System.NotImplementedException();
+            using (IDocumentSession session = store.OpenSession()) {
+                var query = session.Query<Person>()
+                    .Where(person => person.LastName == "gs5hb");
+
+                query.FirstOrDefault();
+            }
         }
 
         public void NoIndexSearch(){
-            throw new System.NotImplementedException();
+            using (IDocumentSession session = store.OpenSession()) {
+                var query = session.Query<Person>()
+                    .Where(person => person.FirstMidName == "4a6pe");
+
+                var res = query.FirstOrDefault();
+            }
         }
 
         public void EmbeddedVsJoin(){
@@ -59,17 +75,8 @@ namespace performanceTest {
 
         public void Create(){
             using (IDocumentSession session = store.OpenSession()) {
-                Person person = new Person {
-                    FirstMidName = "John",
-                    LastName = "baap"
-                };
-
-                session.Store(person);
-                string employeeId = person.Id;
-
+                session.Store(new Person());
                 session.SaveChanges();
-
-                Person loadedPerson = session.Load<Person>(employeeId);
             }
         }
 
