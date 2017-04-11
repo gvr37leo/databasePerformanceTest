@@ -17,7 +17,7 @@ namespace Mssql2Mongo {
             bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
             bsonDocument.Add(new BsonElement(nameof(ZorgvoorwaardeProductTypeByte), ZorgvoorwaardeProductTypeByte));
             bsonDocument.Add(new BsonElement(nameof(SoortZorgverlener), SoortZorgverlener));
-            bsonDocument.Add(new BsonElement(nameof(DekkingsCode), DekkingsCode));
+            bsonDocument.Add(new BsonElement(nameof(DekkingsCode), DekkingsCode ?? ""));
             return bsonDocument;
         }
         public virtual short Uzovi { get; set; }

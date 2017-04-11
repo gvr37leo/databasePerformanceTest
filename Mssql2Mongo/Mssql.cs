@@ -24,9 +24,10 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                        SELECT top 10 id, DbcDeclaratiecode, Prestatiecodelijst
+                        SELECT id, DbcDeclaratiecode, Prestatiecodelijst
                         FROM ZorgPrestatieTariefWereld
-                        where class = 1 --TOG",
+                        where class = 1 --TOG
+                        ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
                 };
@@ -47,7 +48,7 @@ namespace Mssql2Mongo {
                         conn2.Open();
                         SqlCommand cmd2 = new SqlCommand {
                             CommandText = $@"
-                                select top 10 *
+                                select top 50000 *
                                 from ZorgTogTarief z
                                 where z.togtariefwereld = {tariefWereld.Id}",
                             CommandType = CommandType.Text,
@@ -108,7 +109,7 @@ namespace Mssql2Mongo {
                                     tarief = new ZorgTogKortingsTarief(reader2);
                                     break;
                             }
-                            tarief.Bedrag = (long)reader2[nameof(tarief.Bedrag)];
+                            tarief.Bedrag = ConvertFromDBVal<long?>(reader2[nameof(tarief.Bedrag)]);
                             tarief.Begindatum = reader2[nameof(tarief.Begindatum)].ToString();
                             tarief.Einddatum = reader2[nameof(tarief.Einddatum)].ToString();
                             tarief.Importdatum = reader2[nameof(tarief.Importdatum)].ToString();
@@ -125,6 +126,14 @@ namespace Mssql2Mongo {
                     BsonDocument doc = tariefWereld.toJSON();
                     mongo.insert(doc);
                 }
+            }
+        }
+
+        public static T ConvertFromDBVal<T>(object obj) {
+            if (obj == null || obj == DBNull.Value) {
+                return default(T); // returns the default value for the type
+            } else {
+                return (T)obj;
             }
         }
     }

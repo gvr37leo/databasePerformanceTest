@@ -25,6 +25,6 @@ namespace Mssql2Mongo {
             get;
             set;
         }
-        public override short discriminator { get; }
+        public override short discriminator => 8;
     }
 }

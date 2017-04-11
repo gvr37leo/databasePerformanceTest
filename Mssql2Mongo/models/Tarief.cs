@@ -13,7 +13,7 @@ namespace Mssql2Mongo.models {
         public string Vervaldatum;
         public string Importdatum;
         public string IndicatieDebetCredit;
-        public long Bedrag;
+        public long? Bedrag;
 
         public BsonDocument toJSON(){
             return completeJSON(new BsonDocument{

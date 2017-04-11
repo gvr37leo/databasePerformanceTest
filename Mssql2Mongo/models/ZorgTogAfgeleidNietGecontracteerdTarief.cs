@@ -30,7 +30,7 @@ namespace Mssql2Mongo {
         public override BsonDocument completeJSON(BsonDocument bsonDocument){
             bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
             bsonDocument.Add(new BsonElement(nameof(SoortZorgverlener), SoortZorgverlener));
-            bsonDocument.Add(new BsonElement(nameof(DekkingsCode), DekkingsCode));
+            bsonDocument.Add(new BsonElement(nameof(DekkingsCode), DekkingsCode ?? ""));
             bsonDocument.Add(new BsonElement(nameof(Percentage), Percentage));
             return bsonDocument;
         }

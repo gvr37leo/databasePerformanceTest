@@ -30,7 +30,7 @@ namespace Mssql2Mongo.models {
             bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
             bsonDocument.Add(new BsonElement(nameof(ZorgverlenerCode), ZorgverlenerCode));
             bsonDocument.Add(new BsonElement(nameof(Contractnummer), Contractnummer));
-            bsonDocument.Add(new BsonElement(nameof(Contractnummer), Uzovi));
+            bsonDocument.Add(new BsonElement(nameof(Percentage), Percentage));
             return bsonDocument;
         }
     }
