@@ -16,7 +16,7 @@ namespace Mssql2Mongo.models {
         public long Bedrag;
 
         public BsonDocument toJSON(){
-            return new BsonDocument{
+            return completeJSON(new BsonDocument{
                 {"class",discriminator},
                 {nameof(Begindatum), Begindatum },
                 {nameof(Einddatum), Einddatum },
@@ -24,7 +24,9 @@ namespace Mssql2Mongo.models {
                 {nameof(Importdatum), Importdatum },
                 {nameof(IndicatieDebetCredit), IndicatieDebetCredit },
                 {nameof(Bedrag), Bedrag },
-            };
+            });
         }
+
+        public abstract BsonDocument completeJSON(BsonDocument bsonDocument);
     }
 }

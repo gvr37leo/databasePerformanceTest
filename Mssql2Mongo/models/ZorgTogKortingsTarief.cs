@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using MongoDB.Bson;
 using Mssql2Mongo.models;
 
 namespace Mssql2Mongo {
@@ -9,7 +10,12 @@ namespace Mssql2Mongo {
             ZorgverlenerCode = reader2[nameof(ZorgverlenerCode)] as int?;
             Contractnummer = reader2[nameof(Contractnummer)] as long?;
         }
-
+        public override BsonDocument completeJSON(BsonDocument bsonDocument) {
+            bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
+            bsonDocument.Add(new BsonElement(nameof(ZorgverlenerCode), ZorgverlenerCode));
+            bsonDocument.Add(new BsonElement(nameof(Contractnummer), Contractnummer));
+            return bsonDocument;
+        }
         public virtual long? Contractnummer { get; set; }
         
         public virtual short? Uzovi { get; set; }

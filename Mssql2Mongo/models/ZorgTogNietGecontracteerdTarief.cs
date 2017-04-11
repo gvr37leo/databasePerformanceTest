@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using MongoDB.Bson;
 using Mssql2Mongo.models;
 
 namespace Mssql2Mongo {
@@ -12,7 +13,13 @@ namespace Mssql2Mongo {
             SoortZorgverlener = reader2[nameof(SoortZorgverlener)] as byte?;
             DekkingsCode = reader2[nameof(DekkingsCode)] as string;
         }
-
+        public override BsonDocument completeJSON(BsonDocument bsonDocument) {
+            bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
+            bsonDocument.Add(new BsonElement(nameof(ZorgvoorwaardeProductTypeByte), ZorgvoorwaardeProductTypeByte));
+            bsonDocument.Add(new BsonElement(nameof(SoortZorgverlener), SoortZorgverlener));
+            bsonDocument.Add(new BsonElement(nameof(DekkingsCode), DekkingsCode));
+            return bsonDocument;
+        }
         public virtual short Uzovi { get; set; }
 
         public virtual byte? ZorgvoorwaardeProductTypeByte { get; set; }

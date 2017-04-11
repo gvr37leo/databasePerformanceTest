@@ -57,7 +57,7 @@ namespace Mssql2Mongo {
                         var reader2 = cmd2.ExecuteReader();
                         while (reader2.Read()) {
                             Tarief tarief;
-                            long discriminator = (long)reader2[nameof(tarief.Bedrag)];
+                            short discriminator = (short)reader2["class"];
                             switch (discriminator) {
                                 case 2:
                                     tarief = new ZorgTogLandelijkTarief(reader2);

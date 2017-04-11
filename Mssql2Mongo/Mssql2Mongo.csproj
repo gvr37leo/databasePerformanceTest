@@ -81,10 +81,10 @@
     <Compile Include="models\ZorgTogIndividueelTarief.cs" />
     <Compile Include="models\ZorgTogKortingsTarief.cs" />
     <Compile Include="models\ZorgTogLandelijkTarief.cs" />
-    <Compile Include="ZorgTogNietGecontracteerdTarief.cs" />
-    <Compile Include="ZorgTogPassantenTarief.cs" />
-    <Compile Include="ZorgTogVrijGecontracteerdTarief.cs" />
-    <Compile Include="ZorgTogVrijTarief.cs" />
+    <Compile Include="models\ZorgTogNietGecontracteerdTarief.cs" />
+    <Compile Include="models\ZorgTogPassantenTarief.cs" />
+    <Compile Include="models\ZorgTogVrijGecontracteerdTarief.cs" />
+    <Compile Include="models\ZorgTogVrijTarief.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

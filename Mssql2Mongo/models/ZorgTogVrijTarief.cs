@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using MongoDB.Bson;
 using Mssql2Mongo.models;
 
 namespace Mssql2Mongo {
@@ -8,7 +9,9 @@ namespace Mssql2Mongo {
         public ZorgTogVrijTarief(SqlDataReader reader2) {
             
         }
-
+        public override BsonDocument completeJSON(BsonDocument bsonDocument) {
+            return bsonDocument;
+        }
         public override short discriminator => 10;
     }
 }

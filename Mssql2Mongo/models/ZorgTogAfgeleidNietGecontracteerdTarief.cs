@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using Mssql2Mongo.models;
 
 namespace Mssql2Mongo {
@@ -26,5 +27,12 @@ namespace Mssql2Mongo {
         
         public virtual int? Percentage { get; set; }
         public override short discriminator => 16;
+        public override BsonDocument completeJSON(BsonDocument bsonDocument){
+            bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
+            bsonDocument.Add(new BsonElement(nameof(SoortZorgverlener), SoortZorgverlener));
+            bsonDocument.Add(new BsonElement(nameof(DekkingsCode), DekkingsCode));
+            bsonDocument.Add(new BsonElement(nameof(Percentage), Percentage));
+            return bsonDocument;
+        }
     }
 }

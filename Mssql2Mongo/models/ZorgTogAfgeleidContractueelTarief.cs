@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace Mssql2Mongo.models {
     class ZorgTogAfgeleidContractueelTarief : Tarief{
@@ -24,5 +25,13 @@ namespace Mssql2Mongo.models {
         public virtual int? Percentage { get; set; }
 
         public override short discriminator => 15;
+
+        public override BsonDocument completeJSON(BsonDocument bsonDocument) {
+            bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
+            bsonDocument.Add(new BsonElement(nameof(ZorgverlenerCode), ZorgverlenerCode));
+            bsonDocument.Add(new BsonElement(nameof(Contractnummer), Contractnummer));
+            bsonDocument.Add(new BsonElement(nameof(Contractnummer), Uzovi));
+            return bsonDocument;
+        }
     }
 }

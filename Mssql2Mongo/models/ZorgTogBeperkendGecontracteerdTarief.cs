@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace Mssql2Mongo.models {
     class ZorgTogBeperkendGecontracteerdTarief:Tarief {
@@ -15,7 +16,12 @@ namespace Mssql2Mongo.models {
             ZorgverlenerCode = reader2[nameof(ZorgverlenerCode)] as int?;
             Contractnummer = reader2[nameof(Contractnummer)] as long?;
         }
-
+        public override BsonDocument completeJSON(BsonDocument bsonDocument) {
+            bsonDocument.Add(new BsonElement(nameof(Uzovi), Uzovi));
+            bsonDocument.Add(new BsonElement(nameof(ZorgverlenerCode), ZorgverlenerCode));
+            bsonDocument.Add(new BsonElement(nameof(Contractnummer), Contractnummer));
+            return bsonDocument;
+        }
         public override short discriminator => 20;
 
         public virtual short? Uzovi { get; set; }
