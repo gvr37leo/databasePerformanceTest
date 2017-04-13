@@ -12,9 +12,9 @@ namespace performanceTest.Models {
         //[Bag(0, Table = ZorgTogTarief.TABLENAME)]
         //[Key(1, Column = ZorgTogTarief.STR_TOGTARIEFWERELD)]
         //[OneToMany(2, ClassType = typeof(ZorgTogTarief))]
-        public override IEnumerable<ZorgTarief> Tarieven {
+        public override IList<ZorgTarief> Tarieven {
             get { return base.Tarieven; }
-            protected set { base.Tarieven = value; }
+            set { base.Tarieven = value; }
         }
 
         //[Property]

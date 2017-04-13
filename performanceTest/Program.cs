@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 namespace performanceTest {
     internal class Program {
         private static void Main(string[] args) {
-            string dbname = "performanceTest";
-            string tablename = "performanceTest";
+            string dbname = "MongoForce";
+            string tablename = "TogTariefWereld";
 
             List<IDatabase> dbs = new List<IDatabase>();
             //dbs.Add(new Redis("localhost", dbname, tablename));
             //dbs.Add(new Mssql());
-            //dbs.Add(new Mongo("mongodb://localhost:27017", dbname, tablename));
-            dbs.Add(new Neo4J("bolt://localhost:7687", dbname, tablename));
+            dbs.Add(new Mongo("mongodb://localhost:27017", dbname, tablename));
+            //dbs.Add(new Neo4J("bolt://localhost:7687", dbname, tablename));
             //dbs.Add(new RavenDB());
 
             const int repetitions = 100;
@@ -27,9 +27,9 @@ namespace performanceTest {
                 for (int i = 0; i < repetitions; i++) {
                     if(i % 10 == 0) Console.WriteLine(i);
                     //database.FillDb(1300000);
-                    //database.ForceZboSpecific();
+                    database.ForceZboSpecific();
                     //database.Create();
-                    database.NoIndexSearch();
+                    //database.NoIndexSearch();
                     //database.IndexedSearch();
                     //database.Read();
                 }

@@ -6,9 +6,11 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using MongoDB.Bson;
 using Mssql2Mongo.models;
 using Newtonsoft.Json;
+using Neo4j.Driver.V1;
 
 namespace Mssql2Mongo {
     class Mssql {
@@ -121,11 +123,12 @@ namespace Mssql2Mongo {
                         }
                     }
 
-                    //----------------------------------mongo part
+                    //----------------------------------neo4j part
+                    
+                    IDriver driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "$RF5tg^YH"));
+                    ISession session = driver.Session();
 
-                    BsonDocument doc = tariefWereld.toJSON();
-                    mongo.insert(doc);
-                }
+    }
             }
         }
 

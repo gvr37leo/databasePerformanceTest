@@ -52,6 +52,10 @@ namespace performanceTest {
         }
 
         public void ForceZboSpecific(){
+            collection.FindSync(new BsonDocument {
+                {"Prestatiecodelijst", 41},
+                {"DbcDeclaratiecode", "190600"}
+            });
         }
 
         public void IndexedSearch(){

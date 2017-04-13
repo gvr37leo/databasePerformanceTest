@@ -4,7 +4,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace performanceTest.Models{
     public abstract class ZorgPrestatieTariefWereld {
-        private IEnumerable<ZorgTarief> tarieven = new List<ZorgTarief>();
+        private IList<ZorgTarief> tarieven = new List<ZorgTarief>();
         public const string TABLENAME = "ZorgPrestatieTariefWereld";
        
 
@@ -13,9 +13,9 @@ namespace performanceTest.Models{
         //[Id(-2, Name = STR_ID), Generator(-1, Class = "native")]
         public virtual long? Id { get; set; }
 
-        public virtual IEnumerable<ZorgTarief> Tarieven {
+        public virtual IList<ZorgTarief> Tarieven {
             get { return tarieven; }
-            protected set { tarieven = value; }
+            set { tarieven = value; }
         }
 
         protected ZorgPrestatieTariefWereld(){

@@ -3,7 +3,7 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace performanceTest.Models{
-    public abstract class ZorgTarief {
+    public class ZorgTarief {
         public const string STR_CLASS = "class";
         public const string STR_BEDRAG = "Bedrag";
         public const string STR_BEGINDATUM = "Begindatum";
@@ -29,9 +29,11 @@ namespace performanceTest.Models{
         public virtual DateTime? Importdatum { get; set; }
 
         //[Property(Length = 1)]
-        public virtual char IndicatieDebetCredit { get; set; }
+        public virtual char? IndicatieDebetCredit { get; set; }
 
         //[Property]
         public virtual long Bedrag { get; set; }
+
+        public ZorgPrestatieTariefWereld Wereld { get; set; }
     }
 }

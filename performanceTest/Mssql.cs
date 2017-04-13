@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
 using System.Reflection;
+using Dapper;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Connection;
 using NHibernate.Dialect;
@@ -18,26 +22,28 @@ namespace performanceTest{
         
         ISessionFactory factory;
         SqlConnection sqlConnection;
+        string connectionString = "Data Source = stan.topicus.local; Initial Catalog = ZBO_PAUL; Persist Security Info = True; User ID = sa; Password = Gehe1m";
+
         public Mssql(){
             //sqlConnection = new SqlConnection("Data Source=stan.topicus.local;Initial Catalog=ZBO_PAUL;Persist Security Info=True;User ID=sa;Password=Gehe1m");
-            //sqlConnection.Open();
-            Configuration config = new Configuration().DataBaseIntegration(db => {
-                db.ConnectionString = "Data Source=stan.topicus.local;Initial Catalog=ZBO_PAUL;Persist Security Info=True;User ID=sa;Password=Gehe1m";
-                db.Dialect<MySQLDialect>();
-                db.ConnectionProvider<DriverConnectionProvider>();
-                db.Driver<SqlClientDriver>();
-                //db.LogSqlInConsole = true;
-            });
+            ////sqlConnection.Open();
+            //Configuration config = new Configuration().DataBaseIntegration(db => {
+            //    db.ConnectionString = connectionString;
+            //    db.Dialect<MySQLDialect>();
+            //    db.ConnectionProvider<DriverConnectionProvider>();
+            //    db.Driver<SqlClientDriver>();
+            //    //db.LogSqlInConsole = true;
+            //});
 
 
 
-            var mapper = new ModelMapper();
-            mapper.AddMappings(Assembly.GetExecutingAssembly().GetExportedTypes());
-            HbmMapping mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
-            config.AddMapping(mapping);
-            factory = config.BuildSessionFactory();
+            //var mapper = new ModelMapper();
+            //mapper.AddMappings(Assembly.GetExecutingAssembly().GetExportedTypes());
+            //HbmMapping mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
+            //config.AddMapping(mapping);
+            //factory = config.BuildSessionFactory();
 
-            HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
+            //HibernatingRhinos.Profiler.Appender.NHibernate.NHibernateProfiler.Initialize();
         }
 
         public string GetGeneratedSql(ICriteria criteria) {
@@ -72,24 +78,49 @@ namespace performanceTest{
         }
 
         public void ForceZboSpecific(){
-            using (var session = factory.OpenSession()){
-                VektisAanduidingPrestatiecodelijst prestatiecodelijst = new VektisAanduidingPrestatiecodelijst(0);
-                prestatiecodelijst.Code = 0;
-                string dbcDeclaratiecode = "";
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                var tarieven = sqlConnection1.Query< ZorgTarief, ZorgTogTariefWereld, ZorgTarief>(@"select*
+                from ZorgTogTarief z
+                         inner join ZorgPrestatieTariefWereld zw on zw.id = z.TogTariefWereld
+                         where zw.class = 1 
+                         and zw.DbcDeclaratiecode = '190600'
+                         and zw.Prestatiecodelijst = 41", 
+                         (tarief, tariefwereld) =>{
+                             tarief.Wereld = tariefwereld;
 
-                var query = session.QueryOver<ZorgTogTariefWereld>()
-                    .Where(t => t.Prestatiecodelijst == 41)
-                    .And(t => t.DbcDeclaratiecode == "190600");
+                             return tarief;
+                         }).ToList();
                 
 
-                //var result = query
-                //        .List<ZorgTogTariefWereld>();
+                //SqlCommand cmd = new SqlCommand {
+                //    CommandText = $@"
+                //select*
+                //from ZorgPrestatieTariefWereld zw
+                //         inner join ZorgTogTarief z on zw.id = z.TogTariefWereld
+                //         where zw.class = 1 
+                //         and zw.DbcDeclaratiecode = '190600'
+                //         and zw.Prestatiecodelijst = 41
+                //        ",
+                //    CommandType = CommandType.Text,
+                //    Connection = sqlConnection1
+                //};
+                //var reader = cmd.ExecuteReader();
+                ////var list
+                //while (reader.Read()) {
+                //    //var x = reader[null];
+                //}
+    }
 
-                var list = query
-                    .Fetch(t => t.Tarieven).Eager
-                    .FutureValue().Value;
+            //    using (var session = factory.OpenSession()) {
+            //        var query = session.QueryOver<ZorgTogTariefWereld>()
+            //            .Where(t => t.Prestatiecodelijst == 41)
+            //            .And(t => t.DbcDeclaratiecode == "190600");
+            //        var list = query
+            //            .Fetch(t => t.Tarieven).Eager
+            //            .FutureValue().Value;
 
-            }
+            //    }
         }
 
         public void IndexedSearch(){
