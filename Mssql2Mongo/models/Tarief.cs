@@ -15,6 +15,24 @@ namespace Mssql2Mongo.models {
         public string IndicatieDebetCredit;
         public long? Bedrag;
 
+        public string toCypher() {
+
+
+            string query = $@"
+                CREATE(handle:Tarief {{
+                    Begindatum:'{Begindatum}',
+                    Einddatum:'{Einddatum}',
+                    Vervaldatum:'{Vervaldatum}',
+                    Importdatum:'{Importdatum}',
+                    IndicatieDebetCredit:'{IndicatieDebetCredit}',
+                    Bedrag:'{Bedrag}'
+                    
+                }})";
+            return null;
+        }
+
+        //public abstract string completeCypher();
+
         public BsonDocument toJSON(){
             return completeJSON(new BsonDocument{
                 {"class",discriminator},

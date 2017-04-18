@@ -110,7 +110,7 @@ namespace performanceTest{
                 //while (reader.Read()) {
                 //    //var x = reader[null];
                 //}
-    }
+            }
 
             //    using (var session = factory.OpenSession()) {
             //        var query = session.QueryOver<ZorgTogTariefWereld>()

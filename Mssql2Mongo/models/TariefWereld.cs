@@ -13,6 +13,17 @@ namespace Mssql2Mongo.models {
         public long Id { get; set; }
         public List<Tarief> tarieven = new List<Tarief>();
 
+        public string toCypher() {
+            string query = $@"
+                CREATE(handle:TariefWereld {{
+                    Begindatum:'{Prestatiecodelijst}',
+                    Einddatum:'{DbcDeclaratiecode}',
+                    Vervaldatum:'{Id}'
+                }})";
+
+            return query;
+        }
+
         public BsonDocument toJSON(){
             var doc = new BsonDocument{
                 {nameof(Id), Id },
