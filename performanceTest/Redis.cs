@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSRedis;
 using performanceTest.Models;
+using Raven.Abstractions.Extensions;
 
 namespace performanceTest{
     class Redis:IDatabase {
@@ -45,7 +46,26 @@ namespace performanceTest{
         }
 
         public void ForceZboSpecific(){
-            throw new NotImplementedException();
+            Dictionary<string, int> foundValues = new Dictionary<string, int>();
+
+            foreach (var tariefKey in client.LRange("tarieven.prestatiecodelijst:41", 0, -1)) {
+                foundValues[tariefKey]++;
+            }
+
+            foreach (var tariefKey in client.LRange("tarieven.prestatiecodelijst:41",0,-1)) {
+                foundValues[tariefKey]++;
+            }
+
+            foreach (var tariefKey in client.LRange("tarieven.dbcdeclaratiecode:190600", 0, -1)) {
+                int matches = foundValues[tariefKey]++;
+                if (matches == 2) {
+                    client.HGetAll(tariefKey);
+                }
+            }
+
+
+            var tarief = client.Get("tarief:xxidxx");
+            
         }
 
         public void IndexedSearch(){
