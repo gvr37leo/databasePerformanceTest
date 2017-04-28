@@ -26,8 +26,9 @@ namespace performanceTest {
                 sw.Restart();
                 for (int i = 0; i < repetitions; i++) {
                     if(i % 10 == 0) Console.WriteLine(i);
+//                    database.CreateDb();
                     //database.FillDb(1300000);
-//                    database.ForceZboSpecific();
+                    database.ForceZboSpecific();
                     //database.Create();
                     //database.NoIndexSearch();
                     //database.IndexedSearch();

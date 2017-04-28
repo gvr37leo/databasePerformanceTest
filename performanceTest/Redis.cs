@@ -34,6 +34,18 @@ namespace performanceTest{
         }
 
         public void CreateDb(){
+            var person = new Person();
+            var name = person.FirstMidName;
+            var lastname = person.LastName;
+            for (int i = 0; i < 2000; i++) {
+                person = new Person();
+                person.FirstMidName = name;
+                person.LastName = lastname;
+                client.HSet($"tarief.{person.ID}","name",$"{person.FirstMidName}");
+                client.HSet($"tarief.{person.ID}", "lastname", $"{person.LastName}");
+                client.LPush($"tariefIndex.{person.FirstMidName}:{person.LastName}",person.ID);
+            }
+            
             //n.v.t
         }
 
@@ -46,26 +58,9 @@ namespace performanceTest{
         }
 
         public void ForceZboSpecific(){
-            Dictionary<string, int> foundValues = new Dictionary<string, int>();
-
-            foreach (var tariefKey in client.LRange("tarieven.prestatiecodelijst:41", 0, -1)) {
-                foundValues[tariefKey]++;
+            foreach (var tariefKey in client.LRange("tariefIndex.5shew:rvlur", 0, -1)) {
+                client.HGet($"tarief.{tariefKey}", "name");
             }
-
-            foreach (var tariefKey in client.LRange("tarieven.prestatiecodelijst:41",0,-1)) {
-                foundValues[tariefKey]++;
-            }
-
-            foreach (var tariefKey in client.LRange("tarieven.dbcdeclaratiecode:190600", 0, -1)) {
-                int matches = foundValues[tariefKey]++;
-                if (matches == 2) {
-                    client.HGetAll(tariefKey);
-                }
-            }
-
-
-            var tarief = client.Get("tarief:xxidxx");
-            
         }
 
         public void IndexedSearch(){
