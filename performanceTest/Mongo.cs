@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System.Collections.Generic;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using performanceTest.Models;
@@ -55,6 +56,15 @@ namespace performanceTest {
             collection.FindSync(new BsonDocument {
                 {"Prestatiecodelijst", 41},
                 {"DbcDeclaratiecode", "190600"}
+            });
+        }
+
+        public void ForceZboZorgvoorwaarden() {
+            var docs = database.GetCollection<BsonDocument>("producten").FindSync(new BsonDocument {
+                { "Dekkingscode",new BsonDocument{{"$in", new BsonArray(new List<string>{"01600","01636","01640"})}} }
+            });
+            database.GetCollection<BsonDocument>("onderdelen").FindSync(new BsonDocument {
+                {"Id",new BsonDocument{{"$in", new BsonArray(new List<int>{1,2,3})}} }
             });
         }
 

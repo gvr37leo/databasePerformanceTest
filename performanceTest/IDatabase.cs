@@ -15,6 +15,7 @@ namespace performanceTest {
         void ManyJoins();
         void ManySmallQuerys();
         void ForceZboSpecific();
+        void ForceZboZorgvoorwaarden();
         void IndexedSearch();
         void NoIndexSearch();
         void EmbeddedVsJoin();

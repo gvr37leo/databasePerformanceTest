@@ -168,6 +168,14 @@
     <Compile Include="models\ZorgTogPassantenTarief.cs" />
     <Compile Include="models\ZorgTogVrijGecontracteerdTarief.cs" />
     <Compile Include="models\ZorgTogVrijTarief.cs" />
+    <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeConditie.cs" />
+    <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeDetail.cs" />
+    <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeMachtigingVereist.cs" />
+    <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeOnderdeel.cs" />
+    <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeVergoedingSpecificatie.cs" />
+    <Compile Include="zorgvoorwaarde\product\ZorgvoorwaardeCommercieelProduct.cs" />
+    <Compile Include="zorgvoorwaarde\product\ZorgvoorwaardeProduct.cs" />
+    <Compile Include="zorgvoorwaarde\product\ZorgvoorwaardeProductInstantie.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,29 +8,37 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Mssql2Mongo.models;
 using Newtonsoft.Json;
 using Neo4j.Driver.V1;
+using performanceTest.zorgvoorwaarde;
 
 namespace Mssql2Mongo {
     class Mssql {
         string connectionString = "Data Source = stan.topicus.local; Initial Catalog = ZBO_PAUL; Persist Security Info = True; User ID = sa; Password = Gehe1m";
         Mongo mongo;
+        MongoClient client;
+        IMongoDatabase database;
 
         public Mssql(){
             mongo = new Mongo();
+            client = new MongoClient("mongodb://localhost:27017");
+            database = client.GetDatabase("zorgvoorwaarden");
         }
 
         public void readWrite(){
-            IDriver driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "$RF5tg^YH"));
-            ISession session = driver.Session();
+            
             using (var sqlConnection1 = new SqlConnection(connectionString)) {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                        SELECT id, DbcDeclaratiecode, Prestatiecodelijst
-                        FROM ZorgPrestatieTariefWereld
-                        where class = 1 --TOG
+                            select this.id, ver.id, con.id,spec.id
+                            from ZorgvoorwaardeDetail this
+                            left outer join ZorgvoorwaardeMachtigingVereist ver on ver.id = this.MachtigingVereist
+                            left outer join ZorgvoorwaardeConditie con on con.id = this.Conditie
+                            left outer join ZorgvoorwaardeVergoedingSpecificatie spec on spec.VoorwaardeDetail = this.Id
+                            order by this.id
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
@@ -41,15 +49,31 @@ namespace Mssql2Mongo {
                     i++;
                     if(i % 1000 == 0) Console.WriteLine(i);
 
-                    TariefWereld tariefWereld = new TariefWereld();
-                    tariefWereld.Id = (long)reader[nameof(tariefWereld.Id)];
-                    tariefWereld.DbcDeclaratiecode = (string)reader[nameof(tariefWereld.DbcDeclaratiecode)];
-                    tariefWereld.Prestatiecodelijst = reader[nameof(tariefWereld.Prestatiecodelijst)] as short?;
+                    ZorgvoorwaardeDetail zorgvoorwaardeDetail = new ZorgvoorwaardeDetail();
+                    ZorgvoorwaardeMachtigingVereist machtigingVereist = new ZorgvoorwaardeMachtigingVereist();
+                    ZorgvoorwaardeVergoedingSpecificatie vergoedingSpecificatie = new ZorgvoorwaardeVergoedingSpecificatie();
+                    ZorgvoorwaardeConditie conditie = new ZorgvoorwaardeConditie();
+                    
+                    zorgvoorwaardeDetail.MachtigingVereist = machtigingVereist;
+                    zorgvoorwaardeDetail.Conditie = conditie;
+                    zorgvoorwaardeDetail.VergoedingSpecificatie = vergoedingSpecificatie;
+                    zorgvoorwaardeDetail.Onderdeel = (long)reader[nameof(zorgvoorwaardeDetail.Onderdeel)];
+
+
+                    database.GetCollection<BsonDocument>("onderdelen").UpdateOne(new BsonDocument { { "_id", zorgvoorwaardeDetail.Onderdeel } }, 
+                        new BsonDocument{{"$push",new BsonDocument{{"details", zorgvoorwaardeDetail.ToBsonDocument() } }}});
+
+
+
+                    //                    TariefWereld tariefWereld = new TariefWereld();
+                    //                    tariefWereld.Id = (long)reader[nameof(tariefWereld.Id)];
+                    //                    tariefWereld.DbcDeclaratiecode = (string)reader[nameof(tariefWereld.DbcDeclaratiecode)];
+                    //                    tariefWereld.Prestatiecodelijst = reader[nameof(tariefWereld.Prestatiecodelijst)] as short?;
 
                     //----------------------------------neo4j part
 
-
-                    session.Run(tariefWereld.toCypher());
+                    //
+                    //                    session.Run(tariefWereld.toCypher());
 
                     //-----------------------------------
 
