@@ -13,6 +13,7 @@ using Mssql2Mongo.models;
 using Newtonsoft.Json;
 using Neo4j.Driver.V1;
 using performanceTest.zorgvoorwaarde;
+using performanceTest.zorgvoorwaarde.product;
 
 namespace Mssql2Mongo {
     class Mssql {
@@ -33,12 +34,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            select this.id, ver.id, con.id,spec.id
-                            from ZorgvoorwaardeDetail this
-                            left outer join ZorgvoorwaardeMachtigingVereist ver on ver.id = this.MachtigingVereist
-                            left outer join ZorgvoorwaardeConditie con on con.id = this.Conditie
-                            left outer join ZorgvoorwaardeVergoedingSpecificatie spec on spec.VoorwaardeDetail = this.Id
-                            order by this.id
+                            select * from ZorgvoorwaardeProductInstantieZorgvoorwaardeOnderdeelX
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
@@ -49,19 +45,10 @@ namespace Mssql2Mongo {
                     i++;
                     if(i % 1000 == 0) Console.WriteLine(i);
 
-                    ZorgvoorwaardeDetail zorgvoorwaardeDetail = new ZorgvoorwaardeDetail();
-                    ZorgvoorwaardeMachtigingVereist machtigingVereist = new ZorgvoorwaardeMachtigingVereist();
-                    ZorgvoorwaardeVergoedingSpecificatie vergoedingSpecificatie = new ZorgvoorwaardeVergoedingSpecificatie();
-                    ZorgvoorwaardeConditie conditie = new ZorgvoorwaardeConditie();
-                    
-                    zorgvoorwaardeDetail.MachtigingVereist = machtigingVereist;
-                    zorgvoorwaardeDetail.Conditie = conditie;
-                    zorgvoorwaardeDetail.VergoedingSpecificatie = vergoedingSpecificatie;
-                    zorgvoorwaardeDetail.Onderdeel = (long)reader[nameof(zorgvoorwaardeDetail.Onderdeel)];
-
-
-                    database.GetCollection<BsonDocument>("onderdelen").UpdateOne(new BsonDocument { { "_id", zorgvoorwaardeDetail.Onderdeel } }, 
-                        new BsonDocument{{"$push",new BsonDocument{{"details", zorgvoorwaardeDetail.ToBsonDocument() } }}});
+                    database.GetCollection<BsonDocument>("producten").UpdateOne(
+//                        db.getCollection('producten').update({ "ProductInstanties._id":32},{ "$push":{ "ProductInstanties.$.Onderdelen":12} })
+                        new BsonDocument{{ "ProductInstanties._id", (long)reader[0]}},//0 = instantie
+                        new BsonDocument{{"$push", new BsonDocument{{ "ProductInstanties.$.Onderdelen", (long)reader[1] }}}});//1 = onderdeel
 
 
 

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace performanceTest.zorgvoorwaarde.product {
     class ZorgvoorwaardeProductInstantie {
-        public List<ZorgvoorwaardeOnderdeel> Onderdelen;
+        public long Id;
+        public long Product;
+        public List<ZorgvoorwaardeOnderdeel> Onderdelen = new List<ZorgvoorwaardeOnderdeel>();
     }
 }

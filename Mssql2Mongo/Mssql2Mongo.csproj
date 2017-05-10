@@ -173,6 +173,7 @@
     <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeMachtigingVereist.cs" />
     <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeOnderdeel.cs" />
     <Compile Include="zorgvoorwaarde\onderdeel\ZorgvoorwaardeVergoedingSpecificatie.cs" />
+    <Compile Include="zorgvoorwaarde\product\DekkingZorgCommercieelProductX.cs" />
     <Compile Include="zorgvoorwaarde\product\ZorgvoorwaardeCommercieelProduct.cs" />
     <Compile Include="zorgvoorwaarde\product\ZorgvoorwaardeProduct.cs" />
     <Compile Include="zorgvoorwaarde\product\ZorgvoorwaardeProductInstantie.cs" />
