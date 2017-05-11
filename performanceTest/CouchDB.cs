@@ -38,6 +38,10 @@ namespace performanceTest {
         public void ForceZboSpecific(){
         }
 
+        public void ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
         public void IndexedSearch(){
         }
 

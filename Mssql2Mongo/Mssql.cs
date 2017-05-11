@@ -10,6 +10,7 @@ using Dapper;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Mssql2Mongo.models;
+using Mssql2Mongo.zorgvoorwaarde.product;
 using Newtonsoft.Json;
 using Neo4j.Driver.V1;
 using performanceTest.zorgvoorwaarde;
@@ -34,7 +35,9 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            select * from ZorgvoorwaardeProductInstantieZorgvoorwaardeOnderdeelX
+                            select this.id, ZorgvoorwaardeCommercieelProductId,this.Dekkingscode
+                            from DekkingZorgCommercieelProductX this
+                            inner join ZorgvoorwaardeProduct p on this.ZorgvoorwaardeCommercieelProductId = p.Id
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
@@ -45,10 +48,13 @@ namespace Mssql2Mongo {
                     i++;
                     if(i % 1000 == 0) Console.WriteLine(i);
 
-                    database.GetCollection<BsonDocument>("producten").UpdateOne(
-//                        db.getCollection('producten').update({ "ProductInstanties._id":32},{ "$push":{ "ProductInstanties.$.Onderdelen":12} })
-                        new BsonDocument{{ "ProductInstanties._id", (long)reader[0]}},//0 = instantie
-                        new BsonDocument{{"$push", new BsonDocument{{ "ProductInstanties.$.Onderdelen", (long)reader[1] }}}});//1 = onderdeel
+                    DekkingZorgCommercieelProductX dekking = new DekkingZorgCommercieelProductX();
+                    dekking.Id = (long) reader[0];
+                    dekking.Dekkingscode = (long) reader[1];
+
+                    database.GetCollection<BsonDocument>("producten")
+                        .UpdateOne(new BsonDocument {{ "commercieleproducten._id", (long)reader[1]}},
+                            new BsonDocument {{"$push", new BsonDocument{{"commercieleproducten.$.dekkingen",dekking.ToBsonDocument()}}} });
 
 
 

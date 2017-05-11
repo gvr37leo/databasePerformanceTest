@@ -7,5 +7,6 @@ using System.Threading.Tasks;
 namespace Mssql2Mongo.zorgvoorwaarde.product {
     class DekkingZorgCommercieelProductX {
         public long Id;
+        public long Dekkingscode;
     }
 }

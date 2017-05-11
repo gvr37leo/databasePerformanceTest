@@ -49,6 +49,10 @@ namespace performanceTest {
             
         }
 
+        public void ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
         public void IndexedSearch(){
             IStatementResult res = session.Run("match(n:Person{name:'ywr4z'}) return n");
             

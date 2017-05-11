@@ -51,6 +51,10 @@ namespace performanceTest {
             throw new System.NotImplementedException();
         }
 
+        public void ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
         public void IndexedSearch(){
             using (IDocumentSession session = store.OpenSession()) {
                 var query = session.Query<Person>()

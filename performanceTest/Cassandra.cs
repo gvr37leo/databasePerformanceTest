@@ -36,6 +36,10 @@ namespace performanceTest {
             throw new System.NotImplementedException();
         }
 
+        public void ForceZboZorgvoorwaarden() {
+            throw new System.NotImplementedException();
+        }
+
         public void IndexedSearch(){
             throw new System.NotImplementedException();
         }

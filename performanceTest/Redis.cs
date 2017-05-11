@@ -63,6 +63,10 @@ namespace performanceTest{
             }
         }
 
+        public void ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
         public void IndexedSearch(){
             client.HGet("1923598183555136768", "LastName");
         }
