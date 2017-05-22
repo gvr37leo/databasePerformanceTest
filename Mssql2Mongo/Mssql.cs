@@ -29,128 +29,374 @@ namespace Mssql2Mongo {
             database = client.GetDatabase("zorgvoorwaarden");
         }
 
-        public void readWrite(){
-            
+        public void readWrite() {//order is important
+//            Producten();
+//
+//            CommercieleProducten();
+//            DekkingKoppelingen();
+//
+//            Instanties();
+//            OnderdelenReferenties();
+
+            Onderdelen();
+            Details();
+            Condities();
+            Machtigingen();
+            VergoedingSpecificaties();
+        }
+
+        private void Onderdelen() {
             using (var sqlConnection1 = new SqlConnection(connectionString)) {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            select this.id, ZorgvoorwaardeCommercieelProductId,this.Dekkingscode
-                            from DekkingZorgCommercieelProductX this
-                            inner join ZorgvoorwaardeProduct p on this.ZorgvoorwaardeCommercieelProductId = p.Id
+                            SELECT TOP 1000 [Id]
+                                  ,[class]
+                                  ,[Naam]
+                                  ,[Omschrijving]
+                                  ,[Document]
+                                  ,[Onderwerp]
+                                  ,[Verwijzing]
+                                  ,[Jaar]
+                                  ,[Clausuledocument]
+                                  ,[ClausuleVerwijzing]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeOnderdeel]
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
                 };
-                int i = 0;
                 var reader = cmd.ExecuteReader();
-                while (reader.Read()) {
-                    i++;
-                    if(i % 1000 == 0) Console.WriteLine(i);
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
 
-                    DekkingZorgCommercieelProductX dekking = new DekkingZorgCommercieelProductX();
-                    dekking.Id = (long) reader[0];
-                    dekking.Dekkingscode = (long) reader[1];
+                    var product = new ZorgvoorwaardeOnderdeel {
+                        Id = (long)reader[0],
+                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                    };
+                    database.GetCollection<BsonDocument>("producten")
+                        .InsertOne(product.ToBsonDocument());
+
+                }
+            }
+        }
+
+        private void Details() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT TOP 1000 [Id]
+                                  ,[Omschrijving]
+                                  ,[HandmatigeVerwerking]
+                                  ,[Onderdeel]
+                                  ,[Conditie]
+                                  ,[MachtigingVereist]
+                                  ,[Percentage]
+                                  ,[VanTarief]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeDetail]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
+
+                    var product = new ZorgvoorwaardeDetail(){
+                        Id = (long)reader[0],
+                    };
+                    database.GetCollection<BsonDocument>("producten")
+                        .InsertOne(product.ToBsonDocument());
+
+                }
+            }
+        }
+
+        private void Condities() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT [Id]
+                              ,[class]
+                              ,[Naam]
+                              ,[Omschrijving]
+                              ,[Productsoort]
+                              ,[Polissoort]
+                              ,[StandaardProduct]
+                              ,[IsRestitutieclausule]
+                              ,[ZorgvoorwaardeProductTypeByte]
+                          FROM [ZorgvoorwaardeProduct]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
+
+                    var product = new ZorgvoorwaardeProduct {
+                        Id = (long)reader[0],
+                        Class = (short)reader[1],
+                        Naam = Convert.ToString(reader[2]),
+                        Omschrijving = Convert.ToString(reader[3]),
+                        Productsoort = ConvertFromDBVal<int>(reader[4]),
+                        Polissoort = ConvertFromDBVal<int>(reader[5]),
+                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
+                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
+                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                    };
+                    database.GetCollection<BsonDocument>("producten")
+                        .InsertOne(product.ToBsonDocument());
+
+                }
+            }
+        }
+
+        private void Machtigingen() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT [Id]
+                              ,[class]
+                              ,[Naam]
+                              ,[Omschrijving]
+                              ,[Productsoort]
+                              ,[Polissoort]
+                              ,[StandaardProduct]
+                              ,[IsRestitutieclausule]
+                              ,[ZorgvoorwaardeProductTypeByte]
+                          FROM [ZorgvoorwaardeProduct]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
+
+                    var product = new ZorgvoorwaardeProduct {
+                        Id = (long)reader[0],
+                        Class = (short)reader[1],
+                        Naam = Convert.ToString(reader[2]),
+                        Omschrijving = Convert.ToString(reader[3]),
+                        Productsoort = ConvertFromDBVal<int>(reader[4]),
+                        Polissoort = ConvertFromDBVal<int>(reader[5]),
+                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
+                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
+                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                    };
+                    database.GetCollection<BsonDocument>("producten")
+                        .InsertOne(product.ToBsonDocument());
+
+                }
+            }
+        }
+
+        private void VergoedingSpecificaties() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT [Id]
+                              ,[class]
+                              ,[Naam]
+                              ,[Omschrijving]
+                              ,[Productsoort]
+                              ,[Polissoort]
+                              ,[StandaardProduct]
+                              ,[IsRestitutieclausule]
+                              ,[ZorgvoorwaardeProductTypeByte]
+                          FROM [ZorgvoorwaardeProduct]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
+
+                    var product = new ZorgvoorwaardeProduct {
+                        Id = (long)reader[0],
+                        Class = (short)reader[1],
+                        Naam = Convert.ToString(reader[2]),
+                        Omschrijving = Convert.ToString(reader[3]),
+                        Productsoort = ConvertFromDBVal<int>(reader[4]),
+                        Polissoort = ConvertFromDBVal<int>(reader[5]),
+                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
+                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
+                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                    };
+                    database.GetCollection<BsonDocument>("producten")
+                        .InsertOne(product.ToBsonDocument());
+
+                }
+            }
+        }
+
+
+        private void Producten() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT [Id]
+                              ,[class]
+                              ,[Naam]
+                              ,[Omschrijving]
+                              ,[Productsoort]
+                              ,[Polissoort]
+                              ,[StandaardProduct]
+                              ,[IsRestitutieclausule]
+                              ,[ZorgvoorwaardeProductTypeByte]
+                          FROM [ZorgvoorwaardeProduct]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
+
+                    var product = new ZorgvoorwaardeProduct {
+                        Id = (long)reader[0],
+                        Class = (short)reader[1],
+                        Naam = Convert.ToString(reader[2]),
+                        Omschrijving = Convert.ToString(reader[3]),
+                        Productsoort = ConvertFromDBVal<int>(reader[4]),
+                        Polissoort = ConvertFromDBVal<int>(reader[5]),
+                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
+                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
+                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                    };
+                    database.GetCollection<BsonDocument>("producten")
+                        .InsertOne(product.ToBsonDocument());
+
+                }
+            }
+        }
+
+        private void Instanties() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT TOP 1000 [Id]
+                                  ,[Product]
+                                  ,[Jaar]
+                              FROM [ZorgvoorwaardeProductInstantie]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
+
+                    var product = new ZorgvoorwaardeProductInstantie() {
+                        Id = (long)reader[0],
+                        Product = (long)reader[1],
+                        Jaar = (long)reader[2],
+                    };
 
                     database.GetCollection<BsonDocument>("producten")
-                        .UpdateOne(new BsonDocument {{ "commercieleproducten._id", (long)reader[1]}},
-                            new BsonDocument {{"$push", new BsonDocument{{"commercieleproducten.$.dekkingen",dekking.ToBsonDocument()}}} });
+                        .UpdateOne(new BsonDocument { { "_id", product.Product } },
+                            new BsonDocument { { "$push", new BsonDocument { { "ProductInstanties", product.ToBsonDocument() } } } });
+
+                }
+            }
+        }
+
+        private void OnderdelenReferenties() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT TOP 1000 [ZorgvoorwaardeProductInstantie]
+                                  ,[ZorgvoorwaardeOnderdeel]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeProductInstantieZorgvoorwaardeOnderdeelX]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
 
 
+                    database.GetCollection<BsonDocument>("producten")
+                        .UpdateOne(new BsonDocument { { "ProductInstanties._id", (long)reader[0] } },
+                            new BsonDocument { { "$push", new BsonDocument { { "ProductInstanties.$.Onderdelen", (long)reader[1] } } } });
 
-                    //                    TariefWereld tariefWereld = new TariefWereld();
-                    //                    tariefWereld.Id = (long)reader[nameof(tariefWereld.Id)];
-                    //                    tariefWereld.DbcDeclaratiecode = (string)reader[nameof(tariefWereld.DbcDeclaratiecode)];
-                    //                    tariefWereld.Prestatiecodelijst = reader[nameof(tariefWereld.Prestatiecodelijst)] as short?;
+                }
+            }
+        }
 
-                    //----------------------------------neo4j part
+        private void CommercieleProducten() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT TOP 1000 [Id]
+                                  ,[Naam]
+                                  ,[Product]
+                                  ,[Actief]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeCommercieelProduct]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
 
-                    //
-                    //                    session.Run(tariefWereld.toCypher());
+                    var product = new ZorgvoorwaardeCommercieelProduct {
+                        Id = ConvertFromDBVal<long>(reader[0]),
+                        Naam = ConvertFromDBVal<string>(reader[1]),
+                        Product = ConvertFromDBVal<long>(reader[2]),
+                        Actief = ConvertFromDBVal<bool>(reader[3]),
+                    };
 
-                    //-----------------------------------
+                    database.GetCollection<BsonDocument>("producten")
+                        .UpdateOne(new BsonDocument { { "_id", product.Product } },
+                            new BsonDocument { { "$push", new BsonDocument { { "CommercieleProducten", product.ToBsonDocument() } } } });
+                }
+            }
+        }
 
-                    //using (var conn2 = new SqlConnection(connectionString)) {
+        private void DekkingKoppelingen() {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand cmd = new SqlCommand {
+                    CommandText = $@"
+                            SELECT TOP 1000 [Id]
+                                  ,[Dekkingscode]
+                                  ,[Clausule4]
+                                  ,[Clausule5]
+                                  ,[Uzovi]
+                                  ,[ZorgvoorwaardeCommercieelProductId]
+                              FROM [ZBO_PAUL].[dbo].[DekkingZorgCommercieelProductX]
+                        ",
+                    CommandType = CommandType.Text,
+                    Connection = sqlConnection1
+                };
+                var reader = cmd.ExecuteReader();
+                for (int i = 0; reader.Read(); i++) {
+                    if (i % 1000 == 0) Console.WriteLine(i);
 
-                    //    conn2.Open();
-                    //    SqlCommand cmd2 = new SqlCommand {
-                    //        CommandText = $@"
-                    //            select top 50000 *
-                    //            from ZorgTogTarief z
-                    //            where z.togtariefwereld = {tariefWereld.Id}",
-                    //        CommandType = CommandType.Text,
-                    //        Connection = conn2
-                    //    };
+                    var product = new DekkingZorgCommercieelProductX {
+                        Id = ConvertFromDBVal<long>(reader[0]),
+                        Dekkingscode = ConvertFromDBVal<string>(reader[1]),
+                        Clausule4 = ConvertFromDBVal<string>(reader[2]),
+                        Clausule5 = ConvertFromDBVal<string>(reader[3]),
+                        Uzovi = ConvertFromDBVal<string>(reader[4]),
+                        ZorgvoorwaardeCommercieelProductId = ConvertFromDBVal<long>(reader[5]),
+                    };
 
-                    //    var reader2 = cmd2.ExecuteReader();
-                    //    while (reader2.Read()) {
-                    //        Tarief tarief;
-                    //        short discriminator = (short)reader2["class"];
-                    //        switch (discriminator) {
-                    //            case 2:
-                    //                tarief = new ZorgTogLandelijkTarief(reader2);
-                    //                break;
-                    //            case 3:
-                    //                tarief = new ZorgTogIndividueelTarief(reader2);
-                    //                break;
-                    //            case 4:
-                    //                tarief = new ZorgTogContractueelTarief(reader2);
-                    //                break;
-                    //            case 5:
-                    //                tarief = new ZorgTogEenzijdigTarief(reader2);
-                    //                break;
-                    //            case 6:
-                    //                tarief = new ZorgTogNietGecontracteerdTarief(reader2);
-                    //                break;
-                    //            case 7:
-                    //                tarief = new ZorgTogEigenBijdrageTarief(reader2);
-                    //                break;
-                    //            case 8:
-                    //                tarief = new ZorgTogIndividueelSluittarief(reader2);
-                    //                break;
-                    //            case 9:
-                    //                tarief = new ZorgTogPassantenTarief(reader2);
-                    //                break;
-                    //            case 10://11-12-13-18 dont exist for TOG tarieven
-                    //                tarief = new ZorgTogVrijTarief(reader2);
-                    //                break;
-                    //            case 14:
-                    //                tarief = new ZorgTogHonorariumDeelBSegment(reader2);
-                    //                break;
-                    //            case 15:
-                    //                tarief = new ZorgTogAfgeleidContractueelTarief(reader2);
-                    //                break;
-                    //            case 16:
-                    //                tarief = new ZorgTogAfgeleidNietGecontracteerdTarief(reader2);
-                    //                break;
-                    //            case 17:
-                    //                tarief = new ZorgTogVrijGecontracteerdTarief(reader2);
-                    //                break;
-                    //            case 19:
-                    //                tarief = new ZorgTogAfgeleidToeslagTarief(reader2);
-                    //                break;
-                    //            case 20:
-                    //                tarief = new ZorgTogBeperkendGecontracteerdTarief(reader2);
-                    //                break;
-                    //            default://21
-                    //                tarief = new ZorgTogKortingsTarief(reader2);
-                    //                break;
-                    //        }
-                    //        tarief.Bedrag = ConvertFromDBVal<long?>(reader2[nameof(tarief.Bedrag)]);
-                    //        tarief.Begindatum = reader2[nameof(tarief.Begindatum)].ToString();
-                    //        tarief.Einddatum = reader2[nameof(tarief.Einddatum)].ToString();
-                    //        tarief.Importdatum = reader2[nameof(tarief.Importdatum)].ToString();
-                    //        tarief.IndicatieDebetCredit = reader2[nameof(tarief.IndicatieDebetCredit)].ToString();
-                    //        tarief.Vervaldatum = reader2[nameof(tarief.Vervaldatum)].ToString();
-
-
-                    //        tariefWereld.tarieven.Add(tarief);
-                    //    }
-                    //}
-
-
-
-
+                    database.GetCollection<BsonDocument>("producten")
+                        .UpdateOne(new BsonDocument { { "CommercieleProducten._id", product.ZorgvoorwaardeCommercieelProductId } },
+                            new BsonDocument { { "$push", new BsonDocument { { "CommercieleProducten.$.Dekkingen", product.ToBsonDocument() } } } });
 
                 }
             }

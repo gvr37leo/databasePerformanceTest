@@ -14,7 +14,7 @@ namespace performanceTest {
 
             List<IDatabase> dbs = new List<IDatabase>();
 //            dbs.Add(new Redis("localhost", dbname, tablename));
-//            dbs.Add(new Mssql());
+            dbs.Add(new Mssql());
             dbs.Add(new Mongo("mongodb://localhost:27017", dbname, tablename));
             //dbs.Add(new Neo4J("bolt://localhost:7687", dbname, tablename));
             //dbs.Add(new RavenDB());

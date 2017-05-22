@@ -62,29 +62,26 @@ namespace performanceTest {
         }
 
         public void ForceZboZorgvoorwaarden() {
-            List<BsonDocument> docs = database.GetCollection<BsonDocument>("producten").FindSync(new BsonDocument {
-                { "commercieleproducten.dekkingen.Dekkingscode",new BsonDocument{{"$in", new BsonArray(new List<long> { 179, 32, 35 }) } } }
-            }).ToList();
-            List<long> ids = new List<long>();
-
-            var id = docs[0]["ProductInstanties"][0]["Onderdelen"][0];
-            foreach (var doc in docs) {
-                var productinstanties = doc["ProductInstanties"];
-                foreach (var productinstantie in productinstanties.AsBsonArray) {
-                    var onderdelen = productinstantie["Onderdelen"];
-                    foreach (var onderdeelid in onderdelen.AsBsonArray) {
-                        ids.Add((long) onderdeelid);
+//            var ids = db.producten.distinct("commercieleproducten.dekkingen._id",
+//            { "commercieleproducten.dekkingen.Dekkingscode":{$in:[179, 32, 35,44,36,37,38,39,40,41,42]
+//                }
+//            }) 
+//            db.onderdelen.find({"details._id":{$in:ids}})
+            var doc = database.GetCollection<BsonDocument>("producten")
+                .Distinct<long>("commercieleproducten.dekkingen._id", new BsonDocument {
+                    {
+                        "commercieleproducten.dekkingen.Dekkingscode",
+                        new BsonDocument {
+                            {"$in", new BsonArray(new List<long> {179, 32, 35, 44, 36, 37, 38, 39, 40, 41, 42})}
+                        }
                     }
-                }
-                
-            }
+                });
+            doc.MoveNext();
+            var ids = doc.Current;
 
-            //var productinstanties = docs.Select(doc => doc["ProductInstanties"]).ToArray();
-
-
-            database.GetCollection<BsonDocument>("onderdelen").FindSync(new BsonDocument {
+            var x = database.GetCollection<BsonDocument>("onderdelen").FindSync(new BsonDocument {
                 {"details._id",new BsonDocument{{"$in", new BsonArray(ids)}} }
-            }) ;
+            });
         }
 
         public void IndexedSearch(){

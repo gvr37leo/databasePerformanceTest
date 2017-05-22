@@ -7,7 +7,15 @@ using Mssql2Mongo.zorgvoorwaarde.product;
 
 namespace performanceTest.zorgvoorwaarde.product {
     class ZorgvoorwaardeCommercieelProduct {
-        public long Id;
-        List<DekkingZorgCommercieelProductX> dekkingen = new List<DekkingZorgCommercieelProductX>();
+        public long Id { get; set; }
+
+        public List<DekkingZorgCommercieelProductX> Dekkingen { get; set; } 
+            = new List<DekkingZorgCommercieelProductX>();
+
+        public string Naam { get; set; }
+
+        public long? Product { get; set; }
+
+        public bool Actief { get; set; }
     }
 }

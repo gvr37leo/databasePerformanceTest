@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace performanceTest.zorgvoorwaarde.product {
     class ZorgvoorwaardeProductInstantie {
-        public long Id;
-        public long Product;
+        public long Id { get; set; }
+
+        public long? Product { get; set; }
+
+        public long? Jaar { get; set; }
+
         public List<ZorgvoorwaardeOnderdeel> Onderdelen = new List<ZorgvoorwaardeOnderdeel>();
     }
 }
