@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace performanceTest.zorgvoorwaarde {
     class ZorgvoorwaardeMachtigingVereist {
-        public int id;
+        public long Id { get; set; }
+
+        public int? VanafAantalPrestaties { get; set; }
+
+        public int? VanafLeeftijd { get; set; }
+
+        public int? TotLeeftijd { get; set; }
+
+        public bool? NietGecontracteerdeZorgverlener { get; set; }
+
+        public bool? HeeftUitzonderingFysiotherapie { get; set; }
     }
 }

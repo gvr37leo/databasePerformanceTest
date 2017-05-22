@@ -37,11 +37,11 @@ namespace Mssql2Mongo {
 //
 //            Instanties();
 //            OnderdelenReferenties();
-
-            Onderdelen();
-            Details();
-            Condities();
-            Machtigingen();
+//
+//            Onderdelen();
+//            Details();
+//            Condities();
+//            Machtigingen();
             VergoedingSpecificaties();
         }
 
@@ -50,7 +50,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            SELECT TOP 1000 [Id]
+                            SELECT [Id]
                                   ,[class]
                                   ,[Naam]
                                   ,[Omschrijving]
@@ -70,10 +70,18 @@ namespace Mssql2Mongo {
                     if (i % 1000 == 0) Console.WriteLine(i);
 
                     var product = new ZorgvoorwaardeOnderdeel {
-                        Id = (long)reader[0],
-                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                        Id = ConvertFromDBVal<long>(reader[0]),
+                        Class = ConvertFromDBVal<short>(reader[1]),
+                        Naam = ConvertFromDBVal<string>(reader[2]),
+                        Omschrijving = ConvertFromDBVal<string>(reader[3]),
+                        Document = ConvertFromDBVal<string>(reader[4]),
+                        Onderwerp = ConvertFromDBVal<string>(reader[5]),
+                        Verwijzing = ConvertFromDBVal<string>(reader[6]),
+                        Jaar = ConvertFromDBVal<long>(reader[7]),
+                        Clausuledocument = ConvertFromDBVal<string>(reader[8]),
+                        ClausuleVerwijzing = ConvertFromDBVal<string>(reader[9]),
                     };
-                    database.GetCollection<BsonDocument>("producten")
+                    database.GetCollection<BsonDocument>("onderdelen")
                         .InsertOne(product.ToBsonDocument());
 
                 }
@@ -85,7 +93,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            SELECT TOP 1000 [Id]
+                            SELECT [Id]
                                   ,[Omschrijving]
                                   ,[HandmatigeVerwerking]
                                   ,[Onderdeel]
@@ -104,9 +112,17 @@ namespace Mssql2Mongo {
 
                     var product = new ZorgvoorwaardeDetail(){
                         Id = (long)reader[0],
+                        Omschrijving = ConvertFromDBVal<string>(reader[1]),
+                        HandmatigeVerwerking = ConvertFromDBVal<bool>(reader[2]),
+                        Onderdeel = ConvertFromDBVal<long>(reader[3]),
+                        Conditie = ConvertFromDBVal<long>(reader[4]),
+                        MachtigingVereist = ConvertFromDBVal<long>(reader[5]),
+                        Percentage = ConvertFromDBVal<int>(reader[6]),
+                        VanTarief = ConvertFromDBVal<int>(reader[7]),
                     };
-                    database.GetCollection<BsonDocument>("producten")
-                        .InsertOne(product.ToBsonDocument());
+                    database.GetCollection<BsonDocument>("onderdelen")
+                        .UpdateOne(new BsonDocument { { "_id", product.Onderdeel } },
+                            new BsonDocument { { "$push", new BsonDocument { { "details", product.ToBsonDocument() } } } });
 
                 }
             }
@@ -118,15 +134,27 @@ namespace Mssql2Mongo {
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
                             SELECT [Id]
-                              ,[class]
-                              ,[Naam]
-                              ,[Omschrijving]
-                              ,[Productsoort]
-                              ,[Polissoort]
-                              ,[StandaardProduct]
-                              ,[IsRestitutieclausule]
-                              ,[ZorgvoorwaardeProductTypeByte]
-                          FROM [ZorgvoorwaardeProduct]
+                                  ,[GeldigVanafLeeftijd]
+                                  ,[GeldigTotLeeftijd]
+                                  ,[GeldigVanafMaandNaVerjaardag]
+                                  ,[GeldigTotMaandNaVerjaarag]
+                                  ,[GeldigVanafKalenderjaarVanafVerjaardag]
+                                  ,[GeldigTotKalenderjaarNaVerjaardag]
+                                  ,[ZorgVerlenersContractSoort]
+                                  ,[Geslacht]
+                                  ,[Contractnummer]
+                                  ,[IsRestitutieclausule]
+                                  ,[IsVrijwilligEigenRisicoAfgekocht]
+                                  ,[VerplichtEigenRisicoNiveau]
+                                  ,[ChronischeFysiotherapie]
+                                  ,[BijzondereTandheelkunde]
+                                  ,[Buitenland]
+                                  ,[IndicatieSoortPrestatierecord]
+                                  ,[SoortKostenHulpmiddel]
+                                  ,[ChronischeMedicatie]
+                                  ,[Zorgverlenerssoort]
+                                  ,[SoortVerwijzer]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeConditie]
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
@@ -135,19 +163,33 @@ namespace Mssql2Mongo {
                 for (int i = 0; reader.Read(); i++) {
                     if (i % 1000 == 0) Console.WriteLine(i);
 
-                    var product = new ZorgvoorwaardeProduct {
+                    var product = new ZorgvoorwaardeConditie() {
                         Id = (long)reader[0],
-                        Class = (short)reader[1],
-                        Naam = Convert.ToString(reader[2]),
-                        Omschrijving = Convert.ToString(reader[3]),
-                        Productsoort = ConvertFromDBVal<int>(reader[4]),
-                        Polissoort = ConvertFromDBVal<int>(reader[5]),
-                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
-                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
-                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                        GeldigVanafLeeftijd = ConvertFromDBVal<int>(reader[1]),
+                        GeldigTotLeeftijd = ConvertFromDBVal<int>(reader[2]),
+                        GeldigVanafMaandNaVerjaardag = ConvertFromDBVal<int>(reader[3]),
+                        GeldigTotMaandNaVerjaarag = ConvertFromDBVal<int>(reader[4]),
+                        GeldigVanafKalenderjaarVanafVerjaardag = ConvertFromDBVal<int>(reader[5]),
+                        GeldigTotKalenderjaarNaVerjaardag = ConvertFromDBVal<int>(reader[6]),
+                        ZorgVerlenersContractSoort = ConvertFromDBVal<int>(reader[7]),
+                        Geslacht = ConvertFromDBVal<int>(reader[8]),
+                        Contractnummer = ConvertFromDBVal<long>(reader[9]),
+                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[10]),
+                        IsVrijwilligEigenRisicoAfgekocht = ConvertFromDBVal<bool>(reader[11]),
+                        VerplichtEigenRisicoNiveau = ConvertFromDBVal<byte>(reader[12]),
+                        ChronischeFysiotherapie = ConvertFromDBVal<short>(reader[13]),
+                        BijzondereTandheelkunde = ConvertFromDBVal<short>(reader[14]),
+                        Buitenland = ConvertFromDBVal<byte>(reader[15]),
+                        IndicatieSoortPrestatierecord = ConvertFromDBVal<byte>(reader[16]),
+                        SoortKostenHulpmiddel = ConvertFromDBVal<byte>(reader[17]),
+                        ChronischeMedicatie = ConvertFromDBVal<short>(reader[18]),
+                        Zorgverlenerssoort = ConvertFromDBVal<string>(reader[19]),
+                        SoortVerwijzer = ConvertFromDBVal<string>(reader[20]),
                     };
-                    database.GetCollection<BsonDocument>("producten")
-                        .InsertOne(product.ToBsonDocument());
+                    database.GetCollection<BsonDocument>("onderdelen")
+                        .UpdateOne(new BsonDocument { { "details.Conditie", product.Id } },
+                            new BsonDocument { { "$set", new BsonDocument { { "details.$.ConditieObject", product.ToBsonDocument() } } } });
+
 
                 }
             }
@@ -159,15 +201,12 @@ namespace Mssql2Mongo {
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
                             SELECT [Id]
-                              ,[class]
-                              ,[Naam]
-                              ,[Omschrijving]
-                              ,[Productsoort]
-                              ,[Polissoort]
-                              ,[StandaardProduct]
-                              ,[IsRestitutieclausule]
-                              ,[ZorgvoorwaardeProductTypeByte]
-                          FROM [ZorgvoorwaardeProduct]
+                                  ,[VanafAantalPrestaties]
+                                  ,[VanafLeeftijd]
+                                  ,[TotLeeftijd]
+                                  ,[NietGecontracteerdeZorgverlener]
+                                  ,[HeeftUitzonderingFysiotherapie]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeMachtigingVereist]
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
@@ -176,19 +215,18 @@ namespace Mssql2Mongo {
                 for (int i = 0; reader.Read(); i++) {
                     if (i % 1000 == 0) Console.WriteLine(i);
 
-                    var product = new ZorgvoorwaardeProduct {
+                    var product = new ZorgvoorwaardeMachtigingVereist() {
                         Id = (long)reader[0],
-                        Class = (short)reader[1],
-                        Naam = Convert.ToString(reader[2]),
-                        Omschrijving = Convert.ToString(reader[3]),
-                        Productsoort = ConvertFromDBVal<int>(reader[4]),
-                        Polissoort = ConvertFromDBVal<int>(reader[5]),
-                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
-                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
-                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
+                        VanafAantalPrestaties = ConvertFromDBVal<int>(reader[1]),
+                        VanafLeeftijd = ConvertFromDBVal<int>(reader[2]),
+                        TotLeeftijd = ConvertFromDBVal<int>(reader[3]),
+                        NietGecontracteerdeZorgverlener = ConvertFromDBVal<bool>(reader[4]),
+                        HeeftUitzonderingFysiotherapie = ConvertFromDBVal<bool>(reader[5]),
                     };
-                    database.GetCollection<BsonDocument>("producten")
-                        .InsertOne(product.ToBsonDocument());
+                    database.GetCollection<BsonDocument>("onderdelen")
+                        .UpdateOne(new BsonDocument { { "details.MachtigingVereist", product.Id } },
+                            new BsonDocument { { "$set", new BsonDocument { { "details.$.MachtigingVereistObject", product.ToBsonDocument() } } } });
+
 
                 }
             }
@@ -200,15 +238,23 @@ namespace Mssql2Mongo {
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
                             SELECT [Id]
-                              ,[class]
-                              ,[Naam]
-                              ,[Omschrijving]
-                              ,[Productsoort]
-                              ,[Polissoort]
-                              ,[StandaardProduct]
-                              ,[IsRestitutieclausule]
-                              ,[ZorgvoorwaardeProductTypeByte]
-                          FROM [ZorgvoorwaardeProduct]
+                                  ,[MaxAantal]
+                                  ,[MaxBedrag]
+                                  ,[VergoedingsPercentage]
+                                  ,[PerMaanden]
+                                  ,[PerKalenderjaren]
+                                  ,[Dekkingslooptijd]
+                                  ,[PerDagen]
+                                  ,[PerEenheid]
+                                  ,[EigenBijdrage]
+                                  ,[PerKwartaal]
+                                  ,[VergoedingsPercentageBovenMaximum]
+                                  ,[VoorwaardeDetail]
+                                  ,[MaxAantalGrens2]
+                                  ,[MaxBedragGrens2]
+                                  ,[EigenBijdragePercentage]
+                                  ,[PerDiagnose]
+                              FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeVergoedingSpecificatie]
                         ",
                     CommandType = CommandType.Text,
                     Connection = sqlConnection1
@@ -217,24 +263,33 @@ namespace Mssql2Mongo {
                 for (int i = 0; reader.Read(); i++) {
                     if (i % 1000 == 0) Console.WriteLine(i);
 
-                    var product = new ZorgvoorwaardeProduct {
-                        Id = (long)reader[0],
-                        Class = (short)reader[1],
-                        Naam = Convert.ToString(reader[2]),
-                        Omschrijving = Convert.ToString(reader[3]),
-                        Productsoort = ConvertFromDBVal<int>(reader[4]),
-                        Polissoort = ConvertFromDBVal<int>(reader[5]),
-                        StandaardProduct = ConvertFromDBVal<long>(reader[6]),
-                        IsRestitutieclausule = ConvertFromDBVal<bool>(reader[7]),
-                        ZorgvoorwaardeProductTypeByte = ConvertFromDBVal<byte>(reader[8]),
-                    };
-                    database.GetCollection<BsonDocument>("producten")
-                        .InsertOne(product.ToBsonDocument());
+                    var product = new ZorgvoorwaardeVergoedingSpecificatie();
+                    product.Id = (long) reader[0];
+                    product.MaxAantal = ConvertFromDBVal<int>(reader[1]);
+                    product.MaxBedrag = ConvertFromDBVal<int>(reader[2]);
+                    product.VergoedingsPercentage = ConvertFromDBVal<int>(reader[3]);
+                    product.PerMaanden = ConvertFromDBVal<int>(reader[4]);
+                    product.PerKalenderjaren = ConvertFromDBVal<int>(reader[5]);
+                    product.Dekkingslooptijd = ConvertFromDBVal<bool>(reader[6]);
+                    product.PerDagen = ConvertFromDBVal<int>(reader[7]);
+                    product.PerEenheid = ConvertFromDBVal<bool>(reader[8]);
+                    product.EigenBijdrage = ConvertFromDBVal<int>(reader[9]);
+                    product.PerKwartaal = ConvertFromDBVal<bool>(reader[10]);
+                    product.VergoedingsPercentageBovenMaximum = ConvertFromDBVal<int>(reader[11]);
+                    product.VoorwaardeDetail = ConvertFromDBVal<long>(reader[12]);
+                    product.MaxAantalGrens2 = ConvertFromDBVal<int>(reader[13]);
+                    product.MaxBedragGrens2 = ConvertFromDBVal<int>(reader[14]);
+                    product.EigenBijdrage = ConvertFromDBVal<int>(reader[15]);
+                    product.PerDiagnose = ConvertFromDBVal<bool>(reader[16]);
+                    
+                    database.GetCollection<BsonDocument>("onderdelen")
+                        .UpdateOne(new BsonDocument { { "details._id", product.VoorwaardeDetail } },
+                            new BsonDocument { { "$set", new BsonDocument { { "details.$.VergoedingSpecificatie", product.ToBsonDocument() } } } });
+
 
                 }
             }
         }
-
 
         private void Producten() {
             using (var sqlConnection1 = new SqlConnection(connectionString)) {
@@ -282,7 +337,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            SELECT TOP 1000 [Id]
+                            SELECT [Id]
                                   ,[Product]
                                   ,[Jaar]
                               FROM [ZorgvoorwaardeProductInstantie]
@@ -295,9 +350,9 @@ namespace Mssql2Mongo {
                     if (i % 1000 == 0) Console.WriteLine(i);
 
                     var product = new ZorgvoorwaardeProductInstantie() {
-                        Id = (long)reader[0],
-                        Product = (long)reader[1],
-                        Jaar = (long)reader[2],
+                        Id = ConvertFromDBVal<long>(reader[0]),
+                        Product = ConvertFromDBVal<long>(reader[1]),
+                        Jaar = ConvertFromDBVal<long>(reader[2]),
                     };
 
                     database.GetCollection<BsonDocument>("producten")
@@ -313,7 +368,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            SELECT TOP 1000 [ZorgvoorwaardeProductInstantie]
+                            SELECT [ZorgvoorwaardeProductInstantie]
                                   ,[ZorgvoorwaardeOnderdeel]
                               FROM [ZBO_PAUL].[dbo].[ZorgvoorwaardeProductInstantieZorgvoorwaardeOnderdeelX]
                         ",
@@ -338,7 +393,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            SELECT TOP 1000 [Id]
+                            SELECT [Id]
                                   ,[Naam]
                                   ,[Product]
                                   ,[Actief]
@@ -370,7 +425,7 @@ namespace Mssql2Mongo {
                 sqlConnection1.Open();
                 SqlCommand cmd = new SqlCommand {
                     CommandText = $@"
-                            SELECT TOP 1000 [Id]
+                            SELECT [Id]
                                   ,[Dekkingscode]
                                   ,[Clausule4]
                                   ,[Clausule5]
