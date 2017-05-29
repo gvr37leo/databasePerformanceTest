@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Cassandra;
 
 namespace performanceTest {
@@ -36,7 +38,11 @@ namespace performanceTest {
             throw new System.NotImplementedException();
         }
 
-        public void ForceZboZorgvoorwaarden() {
+        public Task ForceZboZorgvoorwaarden() {
+            throw new System.NotImplementedException();
+        }
+
+        public Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes) {
             throw new System.NotImplementedException();
         }
 

@@ -30,18 +30,18 @@ namespace Mssql2Mongo {
         }
 
         public void readWrite() {//order is important
-//            Producten();
-//
-//            CommercieleProducten();
-//            DekkingKoppelingen();
-//
-//            Instanties();
-//            OnderdelenReferenties();
-//
-//            Onderdelen();
-//            Details();
-//            Condities();
-//            Machtigingen();
+            Producten();
+
+            CommercieleProducten();
+            DekkingKoppelingen();
+
+            Instanties();
+            OnderdelenReferenties();
+
+            Onderdelen();
+            Details();
+            Condities();
+            Machtigingen();
             VergoedingSpecificaties();
         }
 

@@ -15,7 +15,8 @@ namespace performanceTest {
         void ManyJoins();
         void ManySmallQuerys();
         void ForceZboSpecific();
-        void ForceZboZorgvoorwaarden();
+        Task ForceZboZorgvoorwaarden();
+        Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes);
         void IndexedSearch();
         void NoIndexSearch();
         void EmbeddedVsJoin();

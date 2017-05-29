@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -61,26 +62,30 @@ namespace performanceTest {
             });
         }
 
-        public void ForceZboZorgvoorwaarden() {
-//            var ids = db.producten.distinct("commercieleproducten.dekkingen._id",
-//            { "commercieleproducten.dekkingen.Dekkingscode":{$in:[179, 32, 35,44,36,37,38,39,40,41,42]
+        public async Task ForceZboZorgvoorwaarden() {
+            await ForceZboZorgvoorwaarden(new List<string> {"01600", "01636", "01640"});
+        }
+
+        public async Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes) {
+//            var onderdeelids = db.getCollection('producten').distinct("ProductInstanties.Onderdelen",{ "CommercieleProducten.Dekkingen.Dekkingscode":{$in:['01600', '01636', '01640']
 //                }
-//            }) 
-//            db.onderdelen.find({"details._id":{$in:ids}})
+//            })
+//
+//            db.onderdelen.distinct("details._id",{"_id":{$in:onderdeelids}})
             var doc = database.GetCollection<BsonDocument>("producten")
-                .Distinct<long>("commercieleproducten.dekkingen._id", new BsonDocument {
+                .Distinct<long>("ProductInstanties.Onderdelen", new BsonDocument {
                     {
-                        "commercieleproducten.dekkingen.Dekkingscode",
+                        "CommercieleProducten.Dekkingen.Dekkingscode",
                         new BsonDocument {
-                            {"$in", new BsonArray(new List<long> {179, 32, 35, 44, 36, 37, 38, 39, 40, 41, 42})}
+                            {"$in", new BsonArray(dekkingsCodes)}
                         }
                     }
                 });
-            doc.MoveNext();
-            var ids = doc.Current;
+            await doc.MoveNextAsync();
+            var onderdelenids = doc.Current;
 
-            var x = database.GetCollection<BsonDocument>("onderdelen").FindSync(new BsonDocument {
-                {"details._id",new BsonDocument{{"$in", new BsonArray(ids)}} }
+            var x = await database.GetCollection<BsonDocument>("onderdelen").FindAsync(new BsonDocument {
+                {"_id",new BsonDocument{{"$in", new BsonArray(onderdelenids)}} }
             });
         }
 

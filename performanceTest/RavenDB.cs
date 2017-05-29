@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using performanceTest.Models;
 using Raven;
 using Raven.Client;
@@ -51,7 +53,11 @@ namespace performanceTest {
             throw new System.NotImplementedException();
         }
 
-        public void ForceZboZorgvoorwaarden() {
+        public Task ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
+        public Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes) {
             throw new NotImplementedException();
         }
 

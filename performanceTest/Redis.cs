@@ -63,7 +63,11 @@ namespace performanceTest{
             }
         }
 
-        public void ForceZboZorgvoorwaarden() {
+        public Task ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
+        public Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes) {
             throw new NotImplementedException();
         }
 

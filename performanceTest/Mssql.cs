@@ -7,6 +7,7 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
 using System.Reflection;
+using System.Threading.Tasks;
 using Dapper;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Connection;
@@ -27,6 +28,7 @@ namespace performanceTest{
         public Mssql(){
             sqlConnection = new SqlConnection("Data Source=stan.topicus.local;Initial Catalog=ZBO_PAUL;Persist Security Info=True;User ID=sa;Password=Gehe1m");
             sqlConnection.Open();
+            
             //Configuration config = new Configuration().DataBaseIntegration(db => {
             //    db.ConnectionString = connectionString;
             //    db.Dialect<MySQLDialect>();
@@ -123,6 +125,10 @@ namespace performanceTest{
             //    }
         }
 
+        public async Task ForceZboZorgvoorwaarden() {
+            await ForceZboZorgvoorwaarden(new List<string> { "01600", "01636", "01640" });
+        }
+
         public void IndexedSearch(){
             using (var session = factory.OpenSession()) {
                 var query = session.QueryOver<Person>()
@@ -193,8 +199,10 @@ namespace performanceTest{
             
         }
 
-        public void ForceZboZorgvoorwaarden() {
-            SqlCommand sqlCommand = new SqlCommand(@"
+        public async Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes) {
+            using (var sqlConnection1 = new SqlConnection(connectionString)) {
+                sqlConnection1.Open();
+                SqlCommand sqlCommand = new SqlCommand($@"
                 SELECT this_.Id                                            as Id248_3_,
                    this_.Omschrijving                                  as Omschrij2_248_3_,
                    this_.HandmatigeVerwerking                          as Handmati3_248_3_,
@@ -270,13 +278,15 @@ namespace performanceTest{
                                          on onderdelen10_.ZorgvoorwaardeOnderdeel = zorgvoorwa4_.Id
                                        inner join ZorgvoorwaardeDetail zorgvoorwa5_
                                          on zorgvoorwa4_.Id = zorgvoorwa5_.Onderdeel
-                                WHERE  this_0_.Dekkingscode in ('01600' /* @p4 */, '01636' /* @p5 */, '01640' /* @p6 */));
-", sqlConnection);
-            try {
-                sqlCommand.ExecuteNonQuery();
-            } catch (Exception e) {
-                Console.WriteLine("collission");
+                                WHERE  this_0_.Dekkingscode in ({String.Join(",", dekkingsCodes)}));
+", sqlConnection1);
+                try {
+                    await sqlCommand.ExecuteNonQueryAsync();
+                } catch (Exception e) {
+                    Console.WriteLine("collission");
+                }
             }
+            
         }
     }
 }

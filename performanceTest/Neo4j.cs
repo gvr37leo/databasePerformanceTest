@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Neo4j.Driver.V1;
 using performanceTest.Models;
 
@@ -49,7 +51,11 @@ namespace performanceTest {
             
         }
 
-        public void ForceZboZorgvoorwaarden() {
+        public Task ForceZboZorgvoorwaarden() {
+            throw new NotImplementedException();
+        }
+
+        public Task ForceZboZorgvoorwaarden(List<string> dekkingsCodes) {
             throw new NotImplementedException();
         }
 
